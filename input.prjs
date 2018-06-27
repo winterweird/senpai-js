@@ -1,0 +1,7 @@
+
+script test () {
+  show Aya invisible, stageLeft;
+  Aya says `hello world!`;
+  move Aya center, visible, quadInOut;
+  addsay `This is a test.`;
+}
