@@ -1,0 +1,15 @@
+{
+  "name": "project-revoluti0n",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nearleyc grammar.ne -o grammar.js && node test.js"
+  },
+  "author": "Joshua <tenner.joshua@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "nearley": "^2.13.0",
+    "typescript": "^2.9.2"
+  }
+}

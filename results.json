@@ -1,0 +1,129 @@
+{
+  "nodeType": "Program",
+  "type": "Program",
+  "location": 0,
+  "props": {
+    "modules": [
+      {
+        "nodeType": "Script",
+        "type": "Module",
+        "location": 1,
+        "props": {
+          "name": {
+            "nodeType": "Identifier",
+            "type": "Identifier",
+            "location": 8,
+            "props": {
+              "value": "test"
+            }
+          },
+          "parameters": null,
+          "statements": [
+            [
+              {
+                "nodeType": "Statement",
+                "type": "Show",
+                "location": 19,
+                "props": {
+                  "whom": {
+                    "nodeType": "Identifier",
+                    "type": "Identifier",
+                    "location": 24,
+                    "props": {
+                      "value": "Aya"
+                    }
+                  },
+                  "modifiers": [
+                    [
+                      "invisible"
+                    ],
+                    [
+                      "stageLeft"
+                    ]
+                  ]
+                }
+              }
+            ],
+            [
+              {
+                "nodeType": "Statement",
+                "type": "Say",
+                "location": 52,
+                "props": {
+                  "whom": {
+                    "nodeType": "Identifier",
+                    "type": "Identifier",
+                    "location": 52,
+                    "props": {
+                      "value": "Aya"
+                    }
+                  },
+                  "value": {
+                    "nodeType": "Expression",
+                    "type": "String",
+                    "location": 61,
+                    "props": {
+                      "value": "hello world!"
+                    }
+                  }
+                }
+              }
+            ],
+            [
+              {
+                "nodeType": "Statement",
+                "type": "Move",
+                "location": 79,
+                "props": {
+                  "whom": {
+                    "nodeType": "Identifier",
+                    "type": "Identifier",
+                    "location": 84,
+                    "props": {
+                      "value": "Aya"
+                    }
+                  },
+                  "modifiers": [
+                    [
+                      "center"
+                    ],
+                    [
+                      "visible"
+                    ],
+                    [
+                      {
+                        "nodeType": "Identifier",
+                        "type": "Identifier",
+                        "location": 105,
+                        "props": {
+                          "value": "quadInOut"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            [
+              {
+                "nodeType": "Statement",
+                "type": "AddSay",
+                "location": 118,
+                "props": {
+                  "value": {
+                    "nodeType": "Expression",
+                    "type": "String",
+                    "location": 125,
+                    "props": {
+                      "value": "This is a test."
+                    }
+                  }
+                }
+              }
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}
