@@ -4,4 +4,7 @@ script test () {
   Aya says `hello world!`;
   move Aya center, visible, quadInOut;
   addsay `This is a test.`;
+  {@
+   console.log("Hello world!");
+  @}
 }

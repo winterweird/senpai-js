@@ -7,12 +7,12 @@
       {
         "nodeType": "Script",
         "type": "Module",
-        "location": 1,
+        "location": 2,
         "props": {
           "name": {
             "nodeType": "Identifier",
             "type": "Identifier",
-            "location": 8,
+            "location": 9,
             "props": {
               "value": "test"
             }
@@ -23,12 +23,12 @@
               {
                 "nodeType": "Statement",
                 "type": "Show",
-                "location": 19,
+                "location": 22,
                 "props": {
                   "whom": {
                     "nodeType": "Identifier",
                     "type": "Identifier",
-                    "location": 24,
+                    "location": 27,
                     "props": {
                       "value": "Aya"
                     }
@@ -48,12 +48,12 @@
               {
                 "nodeType": "Statement",
                 "type": "Say",
-                "location": 52,
+                "location": 56,
                 "props": {
                   "whom": {
                     "nodeType": "Identifier",
                     "type": "Identifier",
-                    "location": 52,
+                    "location": 56,
                     "props": {
                       "value": "Aya"
                     }
@@ -61,7 +61,7 @@
                   "value": {
                     "nodeType": "Expression",
                     "type": "String",
-                    "location": 61,
+                    "location": 65,
                     "props": {
                       "value": "hello world!"
                     }
@@ -73,12 +73,12 @@
               {
                 "nodeType": "Statement",
                 "type": "Move",
-                "location": 79,
+                "location": 84,
                 "props": {
                   "whom": {
                     "nodeType": "Identifier",
                     "type": "Identifier",
-                    "location": 84,
+                    "location": 89,
                     "props": {
                       "value": "Aya"
                     }
@@ -94,7 +94,7 @@
                       {
                         "nodeType": "Identifier",
                         "type": "Identifier",
-                        "location": 105,
+                        "location": 110,
                         "props": {
                           "value": "quadInOut"
                         }
@@ -108,16 +108,26 @@
               {
                 "nodeType": "Statement",
                 "type": "AddSay",
-                "location": 118,
+                "location": 124,
                 "props": {
                   "value": {
                     "nodeType": "Expression",
                     "type": "String",
-                    "location": 125,
+                    "location": 131,
                     "props": {
                       "value": "This is a test."
                     }
                   }
+                }
+              }
+            ],
+            [
+              {
+                "nodeType": "Statement",
+                "type": "JS",
+                "location": 153,
+                "props": {
+                  "code": " console.log(\"Hello world!\");"
                 }
               }
             ]

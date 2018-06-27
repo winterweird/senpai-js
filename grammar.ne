@@ -8,12 +8,15 @@
     "show",
     "hide",
     "move",
-	"center",
-	"invisible",
-	"stageLeft",
-    "left2" , "left3" , "right2"
-			, "right3" , "stageRight" , "visible"
-
+	  "center",
+	  "invisible",
+	  "stageLeft",
+    "left2",
+    "left3",
+    "right2",
+    "right3" ,
+    "stageRight",
+    "visible",
   ]
 %}
 
