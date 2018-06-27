@@ -127,7 +127,29 @@
                 "type": "JS",
                 "location": 153,
                 "props": {
-                  "code": " console.log(\"Hello world!\");"
+                  "code": "console.log(\"Hello world!\");"
+                }
+              }
+            ],
+            [
+              {
+                "nodeType": "Statement",
+                "type": "Move",
+                "location": 198,
+                "props": {
+                  "whom": {
+                    "nodeType": "Identifier",
+                    "type": "Identifier",
+                    "location": 203,
+                    "props": {
+                      "value": "Aya"
+                    }
+                  },
+                  "modifiers": [
+                    [
+                      "center"
+                    ]
+                  ]
                 }
               }
             ]
