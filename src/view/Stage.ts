@@ -1,9 +1,8 @@
 import { EventEmitter } from "events";
 import { ISprite } from "./Sprite";
+import { ISize } from "./util";
 
-export interface StageProps {
-  width: number;
-  height: number;
+export interface IStageProps extends ISize {
   selector: string;
 }
 
@@ -19,7 +18,7 @@ export interface IStage {
 const sortZ = (a: ISprite, b: ISprite) => a.position[7] - b.position[7];
 
 export class Stage extends EventEmitter {
-  constructor(props: StageProps) {
+  constructor(props: IStageProps) {
     super();
     
     this.canvas.width = props.width;
@@ -32,9 +31,12 @@ export class Stage extends EventEmitter {
   sprites: ISprite[] = [];
 
   update() {
+    super.emit("pre-update");
     for(let i = 0; i)
+    super.emit("post-update");
   }
   render() {
+    super.emit("pre-render");
     this.sprites.sort(sortZ);
     let sprite: ISprite;
     let pointer: boolean = false;
@@ -58,6 +60,7 @@ export class Stage extends EventEmitter {
     }
 
     this.canvas.style.cursor = pointer ? "pointer" : "default";
+    super.emit("post-render");
   }
 }
 
