@@ -12,11 +12,11 @@ function inverse(inFunc: Function): Function {
 function inOut(inFunc: Function): Function {
   const outFunc = inverse(inFunc);
   return function(d: number): number {
-    return d < 0.5 ? 0.5 * inFunc(d * 2) : 0.5 + 0.5 * outFunc(2 * d - 1)
-  }
+    return d < 0.5 ? 0.5 * inFunc(d * 2) : 0.5 + 0.5 * outFunc(2 * d - 1);
+  };
 }
 
-export const linear: Function = function linear(d: number): number {
+export const easeLinear: Function = function linear(d: number): number {
   return d;
 };
 

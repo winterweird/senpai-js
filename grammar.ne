@@ -17,6 +17,9 @@
     "right3" ,
     "stageRight",
     "visible",
+    "right",
+    "top",
+    "left",
   ]
 %}
 
@@ -173,7 +176,5 @@ String -> "`" ("\\`" | [^`]):* "`" {%
 Modifier -> ("center" | "invisible" | "stageLeft"
           | "left2" | "left3" | "right2"
 			    | "right3" | "stageRight" | "visible"
-			    | ""
-          
-          
-          Identifier ) {% d => d[0] %}
+			    | "top" | "right" | "left"
+          | Identifier ) {% d => d[0] %}
