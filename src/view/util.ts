@@ -89,7 +89,7 @@ export interface ITextureMap {
   [texture: string]: ImageBitmap;
 };
 
-export async function loadCharacter(name: string): ICharacter {
+export async function loadCharacter(name: string): Promise<ICharacter> {
   const img = loadImage(`./assets/characters/${name}/spritesheet.png`);
   const definition: ISpriteSheet = require(`../../assets/characters/${name}/index.json`);
   const moods: ITextureMap = {};
