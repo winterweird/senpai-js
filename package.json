@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nearleyc grammar.ne -o grammar.js && node test.js"
+    "start": "",
+    "compile-grammar": "nearleyc grammar.ne -o grammar.js"
   },
   "author": "Joshua <tenner.joshua@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^10.5.1",
     "nearley": "^2.13.0",
     "typescript": "^2.9.2"
   },
