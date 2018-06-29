@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 
+
 export interface ISoundSprite {
   id: string;
   buffer: ArrayBuffer;
@@ -9,8 +10,8 @@ export interface ISoundSprite {
   playing: boolean;
   loaded: boolean;
   loop: boolean;
-  loopStart: number;
-  loopEnd: number;
+  start: number;
+  end: number;
   load(buffer: ArrayBuffer) : Promise<void>;
 }
 

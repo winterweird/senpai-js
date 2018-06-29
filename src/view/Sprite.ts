@@ -1,21 +1,68 @@
+import { IInteractionPoint, IKeyState } from "./util";
+import { easeLinear } from "../ease";
+import { EventEmitter } from "events";
+import { Identity } from "./Matrix";
 
 export interface ISprite {
-  previousPosition: number[]; //a, b, c, d, e, f, alpha, z
-  position: number[]; //a, b, c, d, e, f, alpha, z
+  previousPosition: Float64Array; //a, b, c, d, e, f, alpha, z
+  position: Float64Array; //a, b, c, d, e, f, alpha, z
 
   //animation properties
-  interpolatedPosition: number[]; //a, b, c, d, e, f, alpha, z
+  interpolatedPosition: Float64Array; //a, b, c, d, e, f, alpha
   animationStart: number;
   animationLength: number;
   ease: Function;
-
-  //
   cursor: "pointer" | "default";
-  narrowPhase(): boolean; //return true if narrowphase detects mouse collision
-  active: boolean;
-  hover: boolean; //this property is controlled by the stage
-  clicked: boolean; //this property is controlled by the stage
-  down: boolean;
-  update(mouse: IMouseData, keys: IKeyData, touches: ITouchData): void;
+
+  narrowPhase(point: IInteractionPoint): boolean; //narrowPhase point collision detection
+  pointCollision(point: IInteractionPoint): boolean;
+  keyStateChange(key: IKeyState): void;
+  active: boolean; //controlled by the stage
+  hover: boolean; //controlled by the stage
+  clicked: boolean; //controlled by the stage
+  down: boolean; //controlled by the stage
+  update(): void;
   render(ctx: CanvasRenderingContext2D): void;
+}
+
+export interface ISpriteProps {
+  position: Float64Array | number[];
+}
+
+export class Sprite extends EventEmitter implements ISprite {
+  position: Float64Array = new Float64Array(8);
+  previousPosition: Float64Array = new Float64Array(8);
+  interpolatedPosition: Float64Array = new Float64Array(7);
+  animationStart: number = 0;
+  animationEnd: number = 0;
+  ease: Function = easeLinear;
+  cursor: "pointer" | "default" = "default";
+  animationLength: 400;
+  active: boolean = false;
+  hover: boolean = false;
+  clicked: boolean = false;
+  down: boolean = false;
+
+  constructor(props: ISpriteProps) {
+    super();
+    const position = props.position || Identity;
+    this.position.set(position);
+    this.previousPosition.set(position);
+    this.interpolatedPosition.set(position);
+  }
+  narrowPhase(point: IInteractionPoint): boolean {
+    return false;
+  }
+  pointCollision(point: IInteractionPoint): boolean {
+    return false;
+  }
+  keyStateChange(key: IKeyState): void {
+
+  }
+  update(): void {
+
+  }
+  render(ctx: CanvasRenderingContext2D) {
+
+  }
 }

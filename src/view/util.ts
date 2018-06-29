@@ -8,7 +8,9 @@ export interface ISize {
   height: number;
 }
 
-export interface IMouseData extends IPoint {
+export interface IInteractionPoint extends IPoint {
+  id: string;
+  type: "Touch" | "Mouse";
   down: boolean;
 }
 
