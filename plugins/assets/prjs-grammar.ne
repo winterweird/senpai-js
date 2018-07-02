@@ -1,3 +1,4 @@
+@preprocessor typescript
 @{%
   const keywords = [
     "script",

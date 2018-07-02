@@ -1,8 +1,14 @@
+import { IInteractionPoint } from "./util";
 
 export function inverse(matrix: Float64Array, setMatrix: Float64Array): void {
-  const [a, b, c, d, e, f] = matrix;
-  let det = 1 / (a * d - c * b);
-  
+  const a:number = matrix[0],
+    b: number = matrix[1],
+    c: number = matrix[2],
+    d: number = matrix[3],
+    e: number = matrix[4],
+    f: number = matrix[5],
+    det: number = 1 / (a * d - c * b);
+
   setMatrix[0] = d * det;
   setMatrix[1] = -c * det;
   setMatrix[2] = -b * det;
@@ -38,6 +44,7 @@ export function rotate(angle: number, matrix: Float64Array, setMatrix: Float64Ar
     b = matrix[1],
     c = matrix[2],
     d = matrix[3];
+
   setMatrix[0] = a * cos + c * sin;
   setMatrix[1] = b * cos + d * sin;
   setMatrix[2] = c * cos - a * sin;
@@ -48,6 +55,7 @@ export function rotate(angle: number, matrix: Float64Array, setMatrix: Float64Ar
 
 export function skewX(angle: number, matrix: Float64Array, setMatrix: Float64Array): void {
   const tan = Math.tan(angle);
+
   setMatrix[0] = matrix[0];
   setMatrix[1] = matrix[1];
   setMatrix[2] = matrix[2] + matrix[0] * tan;
@@ -58,6 +66,7 @@ export function skewX(angle: number, matrix: Float64Array, setMatrix: Float64Arr
 
 export function skewY(angle: number, matrix: Float64Array, setMatrix: Float64Array): void {
   const tan = Math.tan(angle);
+
   setMatrix[0] = matrix[0] + matrix[2] * tan;
   setMatrix[1] = matrix[1] + matrix[3] * tan;
   setMatrix[2] = matrix[2];
@@ -93,4 +102,29 @@ export function transform(
   setMatrix[3] = mb * pc + md * pd;
   setMatrix[4] = ma * pe + mc * pf + me;
   setMatrix[5] = mb * pe + md * pf + mf;
-}
+};
+
+export function transformPoints(points: IInteractionPoint[], matrix: Float64Array | number[]): IInteractionPoint[] {
+  const a:number = matrix[0],
+    b: number = matrix[1],
+    c: number = matrix[2],
+    d: number = matrix[3],
+    e: number = matrix[4],
+    f: number = matrix[5];
+
+  const result: IInteractionPoint[] = [];
+  let point: IInteractionPoint;
+  for (let i = 0; i < points.length; i++) {
+    point = {
+      id: points[i].id,
+      down: points[i].down,
+      type: points[i].type,
+      captured: points[i].captured,
+      clicked: points[i].clicked,
+      x: a * points[i].x + c * points[i].y + e,
+      y: b * points[i].x + d * points[i].y + f,
+    };
+    result.push(point);
+  }
+  return result;
+};

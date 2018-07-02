@@ -1,6 +1,7 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap } from "./util";
+import { ITextureMap, loadImage, ISpriteSheet, IInteractionPoint } from "./util";
 import { EventEmitter } from "events";
+import { Identity } from "./Matrix";
 
 export interface ICharacterProps extends ISpriteProps {
   name: string;
@@ -23,6 +24,7 @@ export class Character extends Sprite implements ICharacter {
     super(props);
     this.name = props.name;
     this.moods = props.moods;
+    this.setMood("Default");
   }
   setMood(mood: string) {
     const moodTexture = this.moods[mood];
@@ -37,4 +39,27 @@ export class Character extends Sprite implements ICharacter {
   render(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(this.moods[this.mood], 0, 0);
   }
+};
+
+export async function loadCharacter(name: string): Promise<ICharacter> {
+  const img = loadImage(`./assets/characters/${name}/spritesheet.png`);
+  const definition: ISpriteSheet = require(`../../assets/characters/${name}/index.json`);
+  const moods: ITextureMap = {};
+  await Promise.all(
+    Object.entries(definition.frames).map(async function([mood, moodDefintion], i) {
+      moods[mood] = await createImageBitmap(
+        await img,
+        moodDefintion.frame.x,
+        moodDefintion.frame.y,
+        moodDefintion.frame.w,
+        moodDefintion.frame.h,
+      );
+    })
+  );
+  const character = new Character({
+    name,
+    moods,
+    position: Identity,
+  });
+  return character;
 };
