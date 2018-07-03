@@ -1,6 +1,8 @@
 import { Stage, IStageProps } from "./view/Stage";
-import { loadCharacter, Character, ICharacter } from "./view/Character";
-import * as ease from "./ease/index";
+import { loadCheckbox, ICheckbox } from "./view/Checkbox";
+import * as Matrix from "./matrix/index";
+import { easeInSin } from "./ease";
+
 const config = require("../application.config");
 
 const props: IStageProps = {
@@ -9,21 +11,23 @@ const props: IStageProps = {
   selector: "body"
 };
 const stage = new Stage(props);
-let Aya: ICharacter;
 
-loadCharacter("aya").then(a => {
-  Aya = a;
-  stage.addSprite(Aya);
-  Aya.move([1, 0, 0, 1, 100, 100, 1, 0]);
-  Aya.ease = ease.easeInCub;
-  Aya.animationLength = 2000;
-  Aya.animationStart = Date.now();
-  Aya.once("click", e => {
-    Aya.setMood("Grin");
-    Aya.animationStart = Date.now();
-    Aya.move([0.5, 0, 0, 0.5, 50, 50, 0.75, 1]);
-  });
+loadCheckbox("test").then((test: ICheckbox) => {
+  const position = new Float64Array(6);
+  Matrix.set(position, Matrix.Identity);
+  Matrix.translate(100, 100, position, position);
+  Matrix.scale(2, 2, position, position);
+  Matrix.rotate(Math.PI * 0.5, position, position);
+  test
+    .move(position)
+    .over(10000);
+  test.ease = easeInSin;
+  test.text = "Hello World!";
+  test.font = config.ui.font;
+  test.fontColor = config.ui.fontColor;
+  stage.addSprite(test);
 });
+
 
 function frame() {
   requestAnimationFrame(frame);

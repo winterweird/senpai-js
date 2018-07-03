@@ -2,9 +2,10 @@
 import { ISprite } from "./Sprite";
 
 import { ISoundSprite } from "./SoundSprite"
-import { transformPoints } from "./Matrix";
+import { transformPoints } from "../matrix/index";
 import { StageInteractionManager, IStageInteractionManagerProps } from "./StageInteractionManager";
 import { IInteractionPoint } from "./util";
+import { TAU } from "../ease/consts";
 
 export interface IStageProps extends IStageInteractionManagerProps {
   
@@ -71,7 +72,6 @@ export class Stage extends StageInteractionManager {
   update(): IStage {
     super.emit("pre-stage-update");
     const now: number = Date.now();
-    let points: IInteractionPoint[] = null;
 
     super.emit("pre-interpolate");
     for(let i = 0; i < this.sprites.length; i++) {
@@ -84,17 +84,27 @@ export class Stage extends StageInteractionManager {
     let point: IInteractionPoint, sprite: ISprite;
     for(let i = 0; i < this.sprites.length; i++) {
       sprite = this.sprites[i];
-      points = transformPoints(this.points, sprite.inverse);
-      for(let j = 0; j < points.length; j++) {
-        point = points[j];
+      sprite.down = false;
+      sprite.clicked = false;
+      sprite.hover = false;
+
+      transformPoints(this.points, sprite.inverse);
+      for(let j = 0; j < this.points.length; j++) {
+        point = this.points[j];
         if (point.captured) {
           continue;
         }
+        this.ctx.beginPath();
+        this.ctx.arc(point.tx, point.ty, 10, 0, TAU);
+        this.ctx.closePath();
+        this.ctx.fill();
+
         if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
-          sprite.clicked = point.clicked;
-          sprite.down = point.down;
-          sprite.hover = true;
           sprite.pointCollision(point);
+          
+          if (point.clicked) {
+            sprite.active = true;
+          }
           break;
         }
       }
@@ -115,8 +125,6 @@ export class Stage extends StageInteractionManager {
     for(let i = 0; i < this.sprites.length; i++) {
       let sprite: ISprite = this.sprites[i];
       sprite.clicked = false;
-      sprite.hover = false;
-      sprite.down = false;
     }
     super.cleanUp();
   }

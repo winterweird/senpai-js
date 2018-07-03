@@ -1,3 +1,4 @@
+import { ISprite } from "./Sprite";
 
 export interface IPoint {
   x: number;
@@ -50,6 +51,10 @@ export interface IInteractionPoint extends IPoint {
   down: boolean;
   clicked: boolean;
   captured: boolean;
+  active: ISprite;
+  firstDown: boolean;
+  tx: number;
+  ty: number;
 };
 
 export interface IKeyState {

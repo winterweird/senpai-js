@@ -5,7 +5,7 @@ import { TAU, PI } from './consts';
 
 function inverse(inFunc: Function): Function {
   return function outFunc(d: number): number {
-    return 1 - inFunc(d - 1);
+    return 1 - inFunc(1 - d);
   };
 }
 

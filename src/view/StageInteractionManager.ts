@@ -41,6 +41,10 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
     type: "Mouse",
     x: 0,
     y: 0,
+    active: null,
+    firstDown: false,
+    tx: 0,
+    ty: 0,
   };
   private pointIndex: ITouchIndex = {};
   protected points: IInteractionPoint[] = [this.mousePoint];
@@ -68,7 +72,11 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
           captured: false,
           down: true,
           clicked: false,
-          type: "Touch"
+          type: "Touch",
+          active: null,
+          firstDown: true,
+          tx: 0,
+          ty: 0,
         };
         this.pointIndex[touch.identifier.toString()] = point;
         this.points.push(point);
@@ -100,6 +108,9 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
         point.y = touch.clientY - rect.top;
         point.down = false;
         point.clicked = true;
+        if (point.active) {
+          point.active.active = false;
+        }
       }
     }
   }
@@ -114,6 +125,9 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
         point.x = touch.clientX - rect.left;
         point.y = touch.clientY - rect.top;
         point.down = false;
+        if (point.active) {
+          point.active.active = false;
+        }
       }
     }
   }
@@ -123,6 +137,7 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
       point = this.points[i]
       point.clicked = false;
       point.captured = false;
+      point.firstDown = false;
       if (point.type === "Touch" && !point.down) {
         this.points.splice(i, 1);
         delete this.pointIndex[point.id];
@@ -134,11 +149,18 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
     if (this.mousePoint.down) {
       this.mousePoint.clicked = true;
     }
+    if (this.mousePoint.active) {
+      this.mousePoint.active.active = false;
+    }
     this.mousePoint.down = false;
     return this.mouseMove(e);
   }
   private mouseDown(e: MouseEvent): void {
+    if (!this.mousePoint.down) {
+      this.mousePoint.firstDown = true;
+    }
     this.mousePoint.down = true;
+
     e.preventDefault();
     return this.mouseMove(e);
   }

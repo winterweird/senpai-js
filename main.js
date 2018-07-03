@@ -35,7 +35,6 @@ function createWindow () {
     // url = url.replace(/\\/g, '/');
     url = path.normalize(url);
 
-    console.log(url);
     callback({path: url});
 });
 

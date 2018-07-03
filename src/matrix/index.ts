@@ -10,10 +10,10 @@ export function inverse(matrix: Float64Array, setMatrix: Float64Array): void {
     det: number = 1 / (a * d - c * b);
 
   setMatrix[0] = d * det;
-  setMatrix[1] = -c * det;
-  setMatrix[2] = -b * det;
+  setMatrix[1] = -b * det;
+  setMatrix[2] = -c * det;
   setMatrix[3] = a * det;
-  setMatrix[4] = (b * f - e * d) * det;
+  setMatrix[4] = (c * f - e * d) * det;
   setMatrix[5] = (e * b - a * f) * det;
 };
 
@@ -75,11 +75,7 @@ export function skewY(angle: number, matrix: Float64Array, setMatrix: Float64Arr
   setMatrix[5] = matrix[5];
 };
 
-export function transform(
-  matrix: Float64Array,
-  props: Float64Array | number[],
-  setMatrix: Float64Array
-): void {
+export function transform(matrix: Float64Array, props: Float64Array | number[], setMatrix: Float64Array): void {
   //props values
   const pa = props[0],
     pb = props[1],
@@ -104,27 +100,24 @@ export function transform(
   setMatrix[5] = mb * pe + md * pf + mf;
 };
 
-export function transformPoints(points: IInteractionPoint[], matrix: Float64Array | number[]): IInteractionPoint[] {
-  const a:number = matrix[0],
+export function transformPoints(points: IInteractionPoint[], matrix: Float64Array | number[]): void {
+  const a: number = matrix[0],
     b: number = matrix[1],
     c: number = matrix[2],
     d: number = matrix[3],
     e: number = matrix[4],
     f: number = matrix[5];
 
-  const result: IInteractionPoint[] = [];
   let point: IInteractionPoint;
   for (let i = 0; i < points.length; i++) {
-    point = {
-      id: points[i].id,
-      down: points[i].down,
-      type: points[i].type,
-      captured: points[i].captured,
-      clicked: points[i].clicked,
-      x: a * points[i].x + c * points[i].y + e,
-      y: b * points[i].x + d * points[i].y + f,
-    };
-    result.push(point);
+    point = points[i];
+    point.tx = a * point.x + c * point.y + e;
+    point.ty = b * point.x + d * point.y + f;
   }
-  return result;
+};
+
+export function set(target: Float64Array | number[], source: Float64Array | number[]): void {
+  for (let i = 0; i < target.length && i < source.length; i++) {
+    target[i] = source[i];
+  }
 };
