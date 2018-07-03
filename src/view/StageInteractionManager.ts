@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { ISize, IInteractionPoint } from "./util";
+import { ISize, IInteractionPoint } from "../util/index";
 
 export interface ITouchIndex {
   [id: string]: IInteractionPoint;

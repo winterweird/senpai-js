@@ -1,4 +1,4 @@
-import { IInteractionPoint } from "./util";
+import { IInteractionPoint } from "../util";
 
 export function inverse(matrix: Float64Array, setMatrix: Float64Array): void {
   const a:number = matrix[0],

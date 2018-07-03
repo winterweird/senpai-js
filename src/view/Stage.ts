@@ -4,7 +4,7 @@ import { ISprite } from "./Sprite";
 import { ISoundSprite } from "./SoundSprite"
 import { transformPoints } from "../matrix/index";
 import { StageInteractionManager, IStageInteractionManagerProps } from "./StageInteractionManager";
-import { IInteractionPoint } from "./util";
+import { IInteractionPoint } from "../util/index";
 import { TAU } from "../ease/consts";
 
 export interface IStageProps extends IStageInteractionManagerProps {

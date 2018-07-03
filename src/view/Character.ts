@@ -1,5 +1,5 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap, ISpriteSheet, IInteractionPoint } from "./util";
+import { ITextureMap, ISpriteSheet } from "../util";
 import * as Matrix from "../matrix";
 const images = require("../../assets/characters/**/*.png");
 const json = require("../../assets/characters/**/*.json");

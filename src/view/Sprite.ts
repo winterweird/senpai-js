@@ -1,7 +1,7 @@
-import { IInteractionPoint, IKeyState, ISize, ITextureMap } from "./util";
+import { IInteractionPoint, IKeyState, ISize, ITextureMap } from "../util/index";
 import { easeLinear } from "../ease";
 import { EventEmitter } from "events";
-import { Identity, inverse, set, transform } from "../matrix/index";
+import * as Matrix from "../matrix";
 const assert = require("assert");
 
 export interface ISprite extends ISize {
@@ -76,9 +76,9 @@ export class Sprite extends EventEmitter implements ISprite {
     this.id = props.id;
     const position = props.position || VisibleIdentity;
     this.textures = props.textures ? props.textures : this.textures;
-    set(this.position, position);
-    set(this.previousPosition, position);
-    set(this.interpolatedPosition, position);
+    Matrix.set(this.position, position);
+    Matrix.set(this.previousPosition, position);
+    Matrix.set(this.interpolatedPosition, position);
     if (position.length < 6) {
       this.position[6] = 1; //visible
     }
@@ -161,8 +161,7 @@ export class Sprite extends EventEmitter implements ISprite {
       }
     }
 
-    inverse(this.interpolatedPosition, this.inverse);
-    transform(this.interpolatedPosition, this.inverse, this.testMatrix);
+    Matrix.inverse(this.interpolatedPosition, this.inverse);
   }
   setTexture(texture: string): this {
     assert(this.textures[texture]);

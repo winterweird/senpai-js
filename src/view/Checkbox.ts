@@ -1,5 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { ITextureMap, ISpriteSheet, IInteractionPoint, loadImage } from "./util";
+import { ITextureMap, ISpriteSheet, IInteractionPoint, loadImage } from "../util/index";
 import { loadFonts } from "./fonts";
 import * as Matrix from "../matrix";
 
