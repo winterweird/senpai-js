@@ -3,7 +3,7 @@ import { easeLinear } from "../ease";
 import { EventEmitter } from "events";
 import { Identity, inverse } from "./Matrix";
 
-export interface ISprite {
+export interface ISprite extends ISize {
   previousPosition: Float64Array; //a, b, c, d, e, f, alpha, z
   position: Float64Array; //a, b, c, d, e, f, alpha, z
   inverse: Float64Array; //a, b, c, d, e, f
@@ -25,17 +25,22 @@ export interface ISprite {
   clicked: boolean; //controlled by the stage
   down: boolean; //controlled by the stage
 
+  move(position: number[] | Float64Array): ISprite;
   interpolate(now: number): void;
   skipAnimation(): void;
   update(): void;
   render(ctx: CanvasRenderingContext2D): void;
+
+  
+  on(event: string, callback: Function): this;
+  once(event: string, callback: Function): this;
 }
 
 export interface ISpriteProps {
   position: Float64Array | number[];
 }
 
-export class Sprite extends EventEmitter implements ISprite, ISize {
+export class Sprite extends EventEmitter implements ISprite {
   position: Float64Array = new Float64Array(8);
   previousPosition: Float64Array = new Float64Array(8);
   interpolatedPosition: Float64Array = new Float64Array(7);
@@ -60,6 +65,7 @@ export class Sprite extends EventEmitter implements ISprite, ISize {
     this.position.set(position);
     this.previousPosition.set(position);
     this.interpolatedPosition.set(position);
+    this.position[6] = 1; //visible
   }
   broadPhase(point: IInteractionPoint): boolean {
     return point.x >= 0 && point.x <= this.width && point.y >= 0 && point.y <= this.height;
@@ -68,7 +74,29 @@ export class Sprite extends EventEmitter implements ISprite, ISize {
     return false;
   }
   pointCollision(point: IInteractionPoint): boolean {
-    return false;
+    this.emit("point-move", point);
+    return true;
+  }
+  move(position: number[] | Float64Array): ISprite {
+    this.previousPosition[0] = this.interpolatedPosition[0];
+    this.previousPosition[1] = this.interpolatedPosition[1];
+    this.previousPosition[2] = this.interpolatedPosition[2];
+    this.previousPosition[3] = this.interpolatedPosition[3];
+    this.previousPosition[4] = this.interpolatedPosition[4];
+    this.previousPosition[5] = this.interpolatedPosition[5];
+    this.previousPosition[6] = this.interpolatedPosition[6];
+    this.previousPosition[7] = this.position[7];
+
+    this.position[0] = position[0];
+    this.position[1] = position[1];
+    this.position[2] = position[2];
+    this.position[3] = position[3];
+    this.position[4] = position[4];
+    this.position[5] = position[5];
+    this.position[6] = position[6];
+    this.position[7] = position[7];
+
+    return this;
   }
   keyStateChange(key: IKeyState): void {
 
@@ -78,10 +106,7 @@ export class Sprite extends EventEmitter implements ISprite, ISize {
   }
   update(): void {
     if (this.clicked) {
-      super.emit("click", this);
-    }
-    if (this.down) {
-      super.emit("down", this);
+      super.emit("clicked", this);
     }
   }
   interpolate(now: number) {
@@ -91,7 +116,14 @@ export class Sprite extends EventEmitter implements ISprite, ISize {
         : this.ease(progress / this.animationLength);
 
     if (ratio === 1) {
-      this.interpolatedPosition.set(this.position)
+      this.interpolatedPosition[0] = this.position[0];
+      this.interpolatedPosition[1] = this.position[1];
+      this.interpolatedPosition[2] = this.position[2];
+      this.interpolatedPosition[3] = this.position[3];
+      this.interpolatedPosition[4] = this.position[4];
+      this.interpolatedPosition[5] = this.position[5];
+      this.interpolatedPosition[6] = this.position[6];
+      
     } else {
       for (let j = 0; j < 7; j++) {
         this.interpolatedPosition[j] = this.previousPosition[j]

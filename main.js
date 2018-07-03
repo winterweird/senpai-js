@@ -1,6 +1,9 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, protocol } = require('electron')
 const config = require("./application.config");
+const path = require("path");
+const url = require("url");
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -12,15 +15,29 @@ function createWindow () {
     height: config.window.height,
   });
 
-  //if we are testing, we have a dev server delivering the code
-  if (process.env.NODE_ENV === "TEST") {
-    //load parcel
-    mainWindow.loadURL("http://localhost:1234/");
-  } else {
-    //load the production file
-    mainWindow.loadFile('./dist/index.html');
-  }
+  const PROTOCOL = "file";
+  mainWindow.loadURL(
+    url.format({
+      pathname: 'index.html',
+      protocol: PROTOCOL + ":",
+      slashes: true,
+    })
+  );
   
+  protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
+    // // Strip protocol
+    let url = request.url.substr(PROTOCOL.length + 1);
+
+    // Build complete path for node require function
+    url = path.join(__dirname, 'dist', url);
+
+    // Replace backslashes by forward slashes (windows)
+    // url = url.replace(/\\/g, '/');
+    url = path.normalize(url);
+
+    console.log(url);
+    callback({path: url});
+});
 
 
   // Open the DevTools.

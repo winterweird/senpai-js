@@ -3,8 +3,7 @@ import { EventEmitter } from "events";
 
 export interface ISoundSprite {
   id: string;
-  buffer: ArrayBuffer;
-  audioBuffer: AudioBuffer;
+  source: AudioNode;
   gain: GainNode;
 
   playing: boolean;
@@ -31,7 +30,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
   //data props
   buffer: ArrayBuffer = null;
   audioBuffer: AudioBuffer = null;
-  audioBufferSourceNode: AudioBufferSourceNode = tempContext.createBufferSource();
+  source: AudioBufferSourceNode = tempContext.createBufferSource();
   gain: GainNode = tempContext.createGain();
 
   playing: boolean = false;
@@ -55,20 +54,20 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
   }
   async load(buffer: ArrayBuffer): Promise<void> {
     this.buffer = buffer;
-    if (this.audioBufferSourceNode)
+    if (this.source)
     {
-      this.audioBufferSourceNode.disconnect(this.gain);
+      this.source.disconnect(this.gain);
     }
     const audioBuffer = await tempContext.decodeAudioData(buffer);
     this.audioBuffer = audioBuffer;
-    this.audioBufferSourceNode.buffer = audioBuffer;
+    this.source.buffer = audioBuffer;
     this.end = this.end === 0 ? audioBuffer.duration : this.end;
     this.duration = this.end - this.start;
     this.loaded = true;
-    this.audioBufferSourceNode.connect(this.gain);
+    this.source.connect(this.gain);
     if (this.loop) {
-      this.audioBufferSourceNode.loopStart = this.start;
-      this.audioBufferSourceNode.loopEnd = this.end;
+      this.source.loopStart = this.start;
+      this.source.loopEnd = this.end;
     }
     super.emit("audio-loaded", this);
   }
@@ -87,9 +86,9 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
 
       this.playing = true;
       if (this.loop) {
-        this.audioBufferSourceNode.start(start);
+        this.source.start(start);
       } else {
-        this.audioBufferSourceNode.start(start, this.end - start);
+        this.source.start(start, this.end - start);
       }
       super.emit("audio-playing", this);
     } else {
@@ -101,7 +100,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
       this.paused = true;
       this.playing = false;
       this.duration = Date.now() - this.startedAt;
-      this.audioBufferSourceNode.stop();
+      this.source.stop();
       super.emit("audio-paused", this);
     }
   }
@@ -110,7 +109,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
       this.paused = false;
       this.playing = false;
       this.duration = 0;
-      this.audioBufferSourceNode.stop();
+      this.source.stop();
       super.emit("audio-stopped", this);
     }
   }

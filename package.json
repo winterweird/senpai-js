@@ -5,10 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "run-s compile-grammar dev-server",
-    "dev-server": "run-p http-server parcel-watch electron-dev",
-    "electron-dev": "cross-env NODE_ENV=TEST electron .",
-    "http-server": "http-server \"./dist/\" -p 1234",
-    "parcel-watch": "node watch.js",
+    "dev-server": "run-p parcel-watch electron-dev",
+    "electron-dev": "electron .",
+    "web-server": "http-server dist -p 1234",
+    "parcel-watch": "parcel watch ./src/index.html --target=electron",
     "compile-grammar": "nearleyc plugins/assets/prjs-grammar.ne -o plugins/assets/prjs-grammar.js"
   },
   "author": "Joshua <tenner.joshua@gmail.com>",

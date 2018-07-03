@@ -1,7 +1,9 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap, loadImage, ISpriteSheet, IInteractionPoint } from "./util";
-import { EventEmitter } from "events";
+import { ITextureMap, ISpriteSheet, IInteractionPoint } from "./util";
 import { Identity } from "./Matrix";
+import images from "../../assets/characters/**/*.png";
+import json from "../../assets/characters/**/*.json";
+
 
 export interface ICharacterProps extends ISpriteProps {
   name: string;
@@ -12,29 +14,39 @@ export interface ICharacter extends ISprite {
   name: string;
   moods: ITextureMap;
   mood: string;
+  move(position: number[] | Float64Array): ISprite;
   setMood(mood: string): ICharacter;
+  on(event: "click" | "point-move" | "mood-change", callback: Function): this;
+  once(event: "click" | "point-move" | "mood-change", callback: Function): this;
 };
 
 export class Character extends Sprite implements ICharacter {
   name: string = "";
   moods: ITextureMap = {};
-  mood: string = "neutral";
+  mood: string = "Neutral";
 
   constructor(props: ICharacterProps) {
     super(props);
     this.name = props.name;
     this.moods = props.moods;
-    this.setMood("Default");
+    this.setMood("Neutral");
   }
-  setMood(mood: string) {
+  move(position: number[] | Float64Array): ISprite {
+    return super.move(position);
+  }
+  setMood(mood: string): ICharacter {
     const moodTexture = this.moods[mood];
     if (!moodTexture) {
       throw new Error(`Mood (${mood}) not found for character (${this.name}).`);
     }
     this.width = moodTexture.width;
     this.height = moodTexture.height;
-    EventEmitter.prototype.emit.call(this, "mood-change", this);
+    this.mood = mood;
+    super.emit("mood-change", this);
     return this;
+  }
+  narrowPhase(point: IInteractionPoint) {
+    return true;
   }
   render(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(this.moods[this.mood], 0, 0);
@@ -42,8 +54,8 @@ export class Character extends Sprite implements ICharacter {
 };
 
 export async function loadCharacter(name: string): Promise<ICharacter> {
-  const img = loadImage(`./assets/characters/${name}/spritesheet.png`);
-  const definition: ISpriteSheet = require(`../../assets/characters/${name}/index.json`);
+  const img = fetch(images[name].spritesheet).then(e => e.blob());
+  const definition: ISpriteSheet = json[name].index;
   const moods: ITextureMap = {};
   await Promise.all(
     Object.entries(definition.frames).map(async function([mood, moodDefintion], i) {
@@ -63,3 +75,4 @@ export async function loadCharacter(name: string): Promise<ICharacter> {
   });
   return character;
 };
+
