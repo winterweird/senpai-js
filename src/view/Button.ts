@@ -1,22 +1,35 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 import { loadImage, ITextureMap, ISpriteSheet } from "../util";
 import * as Matrix from "../matrix";
+
 const assert = require("assert");
 
 export interface IButton extends ISprite {
   selected: boolean;
+  font: string;
+  fontColor: string;
+  text: string;
 };
 
 export interface IButtonProps extends ISpriteProps {
   selected?: boolean;
+  font?: string;
+  fontColor?: string;
+  text?: string;
 };
 
 export class Button extends Sprite implements IButton {
   selected: boolean = false;
+  font: string = "monospace";
+  fontColor: string = "black";
+  text: string =  ""
 
   constructor(props: IButtonProps) {
     super(props);
     this.selected = props.selected || false;
+    this.font = props.font || this.font;
+    this.fontColor = props.fontColor || this.fontColor;
+    this.text = props.text || this.text;
   }
   update() {
     const active = this.active ? "Active" : "Inactive";
@@ -26,6 +39,15 @@ export class Button extends Sprite implements IButton {
 
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
+  }
+  render(ctx: CanvasRenderingContext2D) {
+    super.render(ctx);
+    ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = `${this.texture.height * 0.5}px ${this.font}`;
+    ctx.fillStyle = this.fontColor;
+    ctx.fillText(this.text, 0, 0);
   }
 };
 

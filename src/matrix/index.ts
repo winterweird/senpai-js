@@ -6,7 +6,8 @@ export interface IMatrix {
   rotate(angle: number): this;
   skewX(angle: number): this;
   skewY(angle: number): this;
-  transform(props: Float64Array | number[] | Matrix): this;
+  transform(props: Float64Array | number[]): this;
+  set(target: Float64Array | number[]): this
   value: number[] | Float64Array;
 };
 
@@ -38,6 +39,10 @@ export class Matrix implements IMatrix {
   }
   transform(props: Float64Array | number[]): this {
     transform(this.value, props, this.value);
+    return this;
+  }
+  set(target: Float64Array | number[]): this {
+    set(target, this.value);
     return this;
   }
 };

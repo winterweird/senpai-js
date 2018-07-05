@@ -95,17 +95,13 @@ export class Stage extends StageInteractionManager {
         if (point.captured) {
           continue;
         }
-        this.ctx.beginPath();
-        this.ctx.arc(point.tx, point.ty, 10, 0, TAU);
-        this.ctx.closePath();
-        this.ctx.fill();
 
         if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
-          sprite.pointCollision(point);
-          
-          if (point.clicked) {
+          if (point.firstDown) {
             sprite.active = true;
+            point.active = sprite;
           }
+          sprite.pointCollision(point);
           break;
         }
       }
