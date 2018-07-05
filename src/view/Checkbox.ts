@@ -54,14 +54,10 @@ export class Checkbox extends Sprite implements ICheckbox {
     ctx.fillText(this.text, 0, 0);
   }
   update() {
-    const modifier = this.active
-      ? (this.hover ? "_Active" : "_Inactive")
-      : "";
-    this.setTexture(
-      this.checked
-        ? `Checked${modifier}`
-        : `Unchecked${modifier}`
-    );
+    const active = this.active ? "Active" : "Inactive";
+    const hover = this.hover ? "Hover" : "NoHover";
+    const checked = this.checked ? "Checked" : "Unchecked";
+    this.setTexture(`${active}_${hover}_${checked}`);
 
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
@@ -85,19 +81,20 @@ export async function loadCheckbox(id: string, src: string, definition: ISpriteS
     })
   );
 
-  assert(textures.Unchecked_Inactive);
-  assert(textures.Unchecked_Active);
-  assert(textures.Unchecked);
-  assert(textures.Checked_Inactive);
-  assert(textures.Checked_Active);
-  assert(textures.Checked);
+  ["Active", "Inactive"].forEach(active => {
+    ["Hover", "NoHover"].forEach(hover => {
+      ["Checked", "Unchecked"].forEach(checked => {
+        assert(textures[`${active}_${hover}_${checked}`]);
+      });
+    });
+  });
 
   const checkbox = new Checkbox({
     id,
     textures,
     position:  Matrix.Identity,
   });
-
+  
   await fonts;
   return checkbox;
 };
