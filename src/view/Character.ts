@@ -1,5 +1,5 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap, ISpriteSheet } from "../util";
+import { ITextureMap, ISpriteSheet, loadImage } from "../util";
 import * as Matrix from "../matrix";
 const images = require("../../assets/characters/**/*.png");
 const json = require("../../assets/characters/**/*.json");
@@ -12,8 +12,6 @@ export interface ICharacterProps extends ISpriteProps {
 
 export interface ICharacter extends ISprite {
   name: string;
-  on(event: "click" | "point-move" | "mood-change", callback: Function): this;
-  once(event: "click" | "point-move" | "mood-change", callback: Function): this;
 };
 
 export class Character extends Sprite implements ICharacter {
@@ -26,9 +24,8 @@ export class Character extends Sprite implements ICharacter {
   }
 };
 
-export async function loadCharacter(name: string): Promise<ICharacter> {
-  const img = fetch(images[name].spritesheet).then(e => e.blob());
-  const definition: ISpriteSheet = json[name].index;
+export async function loadCharacter(name: string, src: string, definition: ISpriteSheet): Promise<ICharacter> {
+  const img = loadImage(src);
   const textures: ITextureMap = {};
   await Promise.all(
     Object.entries(definition.frames).map(async function([desc, mood], i) {

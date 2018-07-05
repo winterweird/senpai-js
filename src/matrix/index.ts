@@ -1,5 +1,47 @@
 import { IInteractionPoint } from "../util";
 
+export interface IMatrix {
+  translate(x: number, y: number): this;
+  scale(x: number, y: number): this;
+  rotate(angle: number): this;
+  skewX(angle: number): this;
+  skewY(angle: number): this;
+  transform(props: Float64Array | number[] | Matrix): this;
+  value: number[] | Float64Array;
+};
+
+export class Matrix implements IMatrix {
+  value: number[] | Float64Array = Identity;
+  constructor(value?: number[] | Float64Array) {
+    this.value = value || this.value;
+  }
+
+  translate(x: number, y: number): this {
+    translate(x, y, this.value, this.value);
+    return this;
+  }
+  scale(x: number, y: number): this {
+    scale(x, y, this.value, this.value);
+    return this;
+  }
+  rotate(angle: number): this {
+    rotate(angle, this.value, this.value);
+    return this;
+  }
+  skewX(angle: number): this {
+    skewX(angle, this.value, this.value);
+    return this;
+  }
+  skewY(angle: number): this {
+    skewY(angle, this.value, this.value);
+    return this;
+  }
+  transform(props: Float64Array | number[]): this {
+    transform(this.value, props, this.value);
+    return this;
+  }
+};
+
 export function inverse(
   matrix: Float64Array | number[],
   setMatrix: Float64Array | number[],
@@ -70,7 +112,11 @@ export function rotate(
   setMatrix[5] = matrix[5];
 };
 
-export function skewX(angle: number, matrix: Float64Array, setMatrix: Float64Array): void {
+export function skewX(
+  angle: number,
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   const tan = Math.tan(angle);
 
   setMatrix[0] = matrix[0];
@@ -81,7 +127,11 @@ export function skewX(angle: number, matrix: Float64Array, setMatrix: Float64Arr
   setMatrix[5] = matrix[5];
 };
 
-export function skewY(angle: number, matrix: Float64Array, setMatrix: Float64Array): void {
+export function skewY(
+  angle: number,
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   const tan = Math.tan(angle);
 
   setMatrix[0] = matrix[0] + matrix[2] * tan;
@@ -92,7 +142,11 @@ export function skewY(angle: number, matrix: Float64Array, setMatrix: Float64Arr
   setMatrix[5] = matrix[5];
 };
 
-export function transform(matrix: Float64Array, props: Float64Array | number[], setMatrix: Float64Array): void {
+export function transform(
+  matrix: Float64Array | number[],
+  props: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   //props values
   const pa = props[0],
     pb = props[1],
@@ -143,4 +197,8 @@ export function set(
   for (let i = 0; i < target.length && i < source.length; i++) {
     target[i] = source[i];
   }
+};
+
+export function chain(value: Float64Array | number[]): IMatrix {
+  return new Matrix(value);
 };

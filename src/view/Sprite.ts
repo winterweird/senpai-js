@@ -16,7 +16,8 @@ export interface ISprite extends ISize {
   animationStart: number;
   animationLength: number;
 
-  ease: Function;
+  ease(ratio: number): number;
+  
   cursor: "pointer" | "default";
 
   broadPhase(point: IInteractionPoint): boolean;
@@ -30,7 +31,7 @@ export interface ISprite extends ISize {
   texture: ImageBitmap | HTMLCanvasElement | HTMLImageElement;
 
   setTexture(texture: string): this;
-  over(timespan: number): this;
+  over(timespan: number, ease: Function): this;
   move(position: number[] | Float64Array): this;
   interpolate(now: number): void;
   skipAnimation(): void;
@@ -58,7 +59,7 @@ export class Sprite extends EventEmitter implements ISprite {
   private testMatrix = new Float64Array(6);
   
   animationStart: number = 0;
-  ease: Function = easeLinear;
+  ease = easeLinear;
   cursor: ("pointer" | "default") = "default";
   animationLength: number = 400;
   active: boolean = false;
@@ -126,9 +127,10 @@ export class Sprite extends EventEmitter implements ISprite {
 
     return this;
   }
-  over(timespan: number): this {
+  over(timespan: number, ease?: (ratio: number) => number): this {
     this.animationLength = timespan;
     this.animationStart = Date.now();
+    this.ease = ease || this.ease;
     return this;
   }
   keyStateChange(key: IKeyState): void {

@@ -8,7 +8,7 @@ import { IInteractionPoint } from "../util/index";
 import { TAU } from "../ease/consts";
 
 export interface IStageProps extends IStageInteractionManagerProps {
-  
+  audioContext: AudioContext;
 };
 
 export interface IStage {
@@ -26,11 +26,12 @@ const sortZ = (a: ISprite, b: ISprite): number => a.position[7] - b.position[7];
 export class Stage extends StageInteractionManager {
   constructor(props: IStageProps) {
     super(props);
+    this.audioContext = props.audioContext;
   }
   private ctx: CanvasRenderingContext2D = this.canvas.getContext("2d");
   private sprites: ISprite[] = [];
   private soundSprites: ISoundSprite[] = [];
-  private audioContext: AudioContext = new AudioContext;
+  private audioContext: AudioContext = null;
   
   addSprite(sprite: ISprite): IStage {
     if (!this.sprites.includes(sprite)) {

@@ -50,7 +50,6 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
   protected points: IInteractionPoint[] = [this.mousePoint];
   private hookEvents(): void {
     this.events.forEach(event => event[0].addEventListener(event[1], event[2]));
-
   }
   protected dispose(): void {
     if (this.canvas.parentElement) {

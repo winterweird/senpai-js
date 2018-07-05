@@ -68,10 +68,8 @@ export class Checkbox extends Sprite implements ICheckbox {
   }
 };
 
-export async function loadCheckbox(id: string): Promise<ICheckbox> {
-  const definition: ISpriteSheet = require("../../assets/checkbox/index.json");
-  const cbSource: string = require("../../assets/checkbox/spritesheet.png");
-  const img = loadImage(cbSource);
+export async function loadCheckbox(id: string, src: string, definition: ISpriteSheet): Promise<ICheckbox> {
+  const img = loadImage(src);
   const textures: ITextureMap = {};
   const fonts = loadFonts();
 

@@ -1,5 +1,5 @@
 node_modules
-assets/characters/**
+assets/characters
+assets/fonts
 dist
 .cache
-.vscode
