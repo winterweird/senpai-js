@@ -167,11 +167,16 @@ export class Sprite extends EventEmitter implements ISprite {
   }
   setTexture(texture: string): this {
     assert(this.textures[texture]);
-
+    
+    const oldTexture = this.texture;
     this.texture = this.textures[texture];
     this.width = this.texture.width;
     this.height = this.texture.height;
-    this.emit("texture-change", this.texture);
+
+    if (oldTexture !== this.texture) {
+      this.emit("texture-change", this.texture);
+    }
+
     return this;
   }
   render(ctx: CanvasRenderingContext2D): void {

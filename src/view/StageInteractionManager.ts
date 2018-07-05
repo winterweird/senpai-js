@@ -10,8 +10,8 @@ export interface IStageInteractionManagerProps extends ISize {
 };
 
 export interface IStageInteractionManager {
-
-}
+  canvas: HTMLCanvasElement;
+};
 
 export class StageInteractionManager extends EventEmitter implements IStageInteractionManager {
   constructor(props: IStageInteractionManagerProps) {
@@ -22,7 +22,7 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
     this.canvas.height = props.height;
     this.hookEvents();
   }
-  protected canvas: HTMLCanvasElement = document.createElement("canvas");
+  canvas: HTMLCanvasElement = document.createElement("canvas");
   private events: Array<Array<any>> = [
     [this.canvas, "mousedown", e => this.mouseDown(e)],
     [document.body, "mouseup", e => this.mouseUp(e)],

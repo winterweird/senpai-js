@@ -1,5 +1,5 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap } from "../util";
+import { loadImage, ITextureMap, ISpriteSheet } from "../util";
 import * as Matrix from "../matrix";
 const assert = require("assert");
 
@@ -53,11 +53,11 @@ export async function loadButton(id: string, src: string, definition: ISpriteShe
     });
   });
 
-  const checkbox = new Button({
+  const button = new Button({
     id,
     textures,
     position:  Matrix.Identity,
   });
   
-  return checkbox;
+  return button;
 };
