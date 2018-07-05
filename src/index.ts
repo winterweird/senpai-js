@@ -2,8 +2,8 @@ import { Stage, IStageProps } from "./view/Stage";
 import { loadCheckbox, ICheckbox } from "./view/Checkbox";
 import * as Matrix from "./matrix/index";
 import { easeInSin } from "./ease";
+import config from "../application.config";
 
-const config = require("../application.config");
 
 const props: IStageProps = {
   width: config.window.width,

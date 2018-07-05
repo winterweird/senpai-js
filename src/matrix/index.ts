@@ -1,6 +1,9 @@
 import { IInteractionPoint } from "../util";
 
-export function inverse(matrix: Float64Array, setMatrix: Float64Array): void {
+export function inverse(
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   const a:number = matrix[0],
     b: number = matrix[1],
     c: number = matrix[2],
@@ -19,7 +22,12 @@ export function inverse(matrix: Float64Array, setMatrix: Float64Array): void {
 
 export const Identity = new Float64Array([1, 0, 0, 1, 0, 0]);
 
-export function translate(x: number, y: number, matrix: Float64Array, setMatrix: Float64Array): void {
+export function translate(
+  x: number,
+  y: number,
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   setMatrix[0] = matrix[0];
   setMatrix[1] = matrix[1];
   setMatrix[2] = matrix[2];
@@ -28,7 +36,12 @@ export function translate(x: number, y: number, matrix: Float64Array, setMatrix:
   setMatrix[5] = matrix[1] * x + matrix[3] * y + matrix[5];
 };
 
-export function scale(x: number, y: number, matrix: Float64Array, setMatrix: Float64Array): void {
+export function scale(
+  x: number,
+  y: number,
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   setMatrix[0] = matrix[0] * x;
   setMatrix[1] = matrix[1] * x;
   setMatrix[2] = matrix[2] * y;
@@ -37,7 +50,11 @@ export function scale(x: number, y: number, matrix: Float64Array, setMatrix: Flo
   setMatrix[5] = matrix[5];
 };
 
-export function rotate(angle: number, matrix: Float64Array, setMatrix: Float64Array): void {
+export function rotate(
+  angle: number,
+  matrix: Float64Array | number[],
+  setMatrix: Float64Array | number[],
+): void {
   const cos = Math.cos(angle),
     sin = Math.sin(angle),
     a = matrix[0],
@@ -100,7 +117,10 @@ export function transform(matrix: Float64Array, props: Float64Array | number[], 
   setMatrix[5] = mb * pe + md * pf + mf;
 };
 
-export function transformPoints(points: IInteractionPoint[], matrix: Float64Array | number[]): void {
+export function transformPoints(
+  points: IInteractionPoint[],
+  matrix: Float64Array | number[],
+): void {
   const a: number = matrix[0],
     b: number = matrix[1],
     c: number = matrix[2],
@@ -116,7 +136,10 @@ export function transformPoints(points: IInteractionPoint[], matrix: Float64Arra
   }
 };
 
-export function set(target: Float64Array | number[], source: Float64Array | number[]): void {
+export function set(
+  target: Float64Array | number[],
+  source: Float64Array | number[],
+): void {
   for (let i = 0; i < target.length && i < source.length; i++) {
     target[i] = source[i];
   }
