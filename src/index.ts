@@ -1,8 +1,9 @@
 import { Stage, IStageProps } from "./view/Stage";
-import { loadCheckbox, ICheckbox } from "./view/Checkbox";
+import { loadCheckbox } from "./view/Checkbox";
 import * as m from "./matrix";
 import { easeInSin } from "./ease";
 import config from "../application.config";
+import { loadFonts } from "./view/fonts";
 
 
 const props: IStageProps = {
@@ -14,11 +15,13 @@ const props: IStageProps = {
 const stage = new Stage(props);
 
 (async function() {
+  const fonts = loadFonts(require("../../assets/fonts/*.otf"));
   const test = await loadCheckbox(
     "test",
     require("../assets/checkbox/spritesheet.png"),
     require("../assets/checkbox/index.json"),
   );
+  await fonts;
   const position = new m.Matrix();
   position
     .translate(100, 100)

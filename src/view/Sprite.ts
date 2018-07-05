@@ -56,8 +56,7 @@ export class Sprite extends EventEmitter implements ISprite {
   previousPosition: Float64Array = new Float64Array(8);
   interpolatedPosition: Float64Array = new Float64Array(7);
   inverse: Float64Array = new Float64Array(6);
-  private testMatrix = new Float64Array(6);
-  
+
   animationStart: number = 0;
   ease = easeLinear;
   cursor: ("pointer" | "default") = "default";
@@ -167,7 +166,7 @@ export class Sprite extends EventEmitter implements ISprite {
   }
   setTexture(texture: string): this {
     assert(this.textures[texture]);
-    
+
     const oldTexture = this.texture;
     this.texture = this.textures[texture];
     this.width = this.texture.width;
