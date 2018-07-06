@@ -105,3 +105,15 @@ export async function loadSoundBuffer(source: Promise<Response>, start: number, 
   const res = await source;
   const buffer = await res.arrayBuffer();
 };
+
+export interface ILoadProps {
+  src: string;
+  definition: ISpriteSheet;
+};
+
+export interface IPadding {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+};

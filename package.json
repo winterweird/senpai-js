@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "electron": "^2.0.3",
-    "electron-builder": "^20.18.0"
+    "electron-builder": "^20.18.0",
+    "split-to-words": "^1.0.2"
   }
 }

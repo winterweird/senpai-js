@@ -24,7 +24,6 @@ const stage = new Stage(props);
     require("../assets/slider/index.json"),
   );
 
-  slider.position[6] = 1;
   m.chain(slider.position)
     .translate(100, 100)
     .set(slider.previousPosition);
@@ -37,7 +36,7 @@ const stage = new Stage(props);
     require("../assets/button/spritesheet.png"),
     require("../assets/button/index.json"),
   );
-  button.position[6] = 1;
+
   m.chain(button.position)
     .translate(100, 200)
     .set(button.previousPosition);
@@ -51,7 +50,6 @@ const stage = new Stage(props);
     require("../assets/checkbox/spritesheet.png"),
     require("../assets/checkbox/index.json"),
   );
-  cb.position[6] =1;
   m.chain(cb.position)
     .translate(100, 300)
     .set(cb.previousPosition);

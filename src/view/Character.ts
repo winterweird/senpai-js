@@ -1,5 +1,5 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap, ISpriteSheet, loadImage } from "../util";
+import { ITextureMap, ISpriteSheet, loadImage, ILoadProps } from "../util";
 import * as Matrix from "../matrix";
 const images = require("../../assets/characters/**/*.png");
 const json = require("../../assets/characters/**/*.json");
@@ -24,11 +24,14 @@ export class Character extends Sprite implements ICharacter {
   }
 };
 
-export async function loadCharacter(name: string, src: string, definition: ISpriteSheet): Promise<ICharacter> {
-  const img = loadImage(src);
+export interface ILoadCharacterProps extends ICharacterProps, ILoadProps {
+
+}
+export async function loadCharacter(props: ILoadCharacterProps): Promise<ICharacter> {
+  const img = loadImage(props.src);
   const textures: ITextureMap = {};
   await Promise.all(
-    Object.entries(definition.frames).map(async function([desc, mood], i) {
+    Object.entries(props.definition.frames).map(async function([desc, mood], i) {
       textures[desc] = await createImageBitmap(
         await img,
         mood.frame.x,
@@ -40,13 +43,9 @@ export async function loadCharacter(name: string, src: string, definition: ISpri
   );
 
   assert(textures.Neutral);
+  props.textures = textures;
+  const character = new Character(props);
 
-  const character = new Character({
-    id: name,
-    name,
-    textures,
-    position: Matrix.Identity,
-  });
   return character;
 };
 

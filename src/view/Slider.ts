@@ -1,5 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { IInteractionPoint, loadImage, ITextureMap, ISpriteSheet } from "../util";
+import { IInteractionPoint, loadImage, ITextureMap, ISpriteSheet, ILoadProps } from "../util";
 import * as Matrix from "../matrix";
 
 const assert = require("assert");
@@ -103,12 +103,16 @@ export class Slider extends Sprite implements ISlider {
   }
 }
 
-export async function loadSlider(id: string, src: string, definition: ISpriteSheet): Promise<ISlider> {
-  const img = loadImage(src);
+export interface ILoadSliderProps extends ISliderProps, ILoadProps {
+
+}
+
+export async function loadSlider(props: ILoadSliderProps): Promise<ISlider> {
+  const img = loadImage(props.src);
   const textures: ITextureMap = {};
 
   await Promise.all(
-    Object.entries(definition.frames).map(async function([desc, state], i) {
+    Object.entries(props.definition.frames).map(async function([desc, state], i) {
       textures[desc] = await createImageBitmap(
         await img,
         state.frame.x,
@@ -125,12 +129,9 @@ export async function loadSlider(id: string, src: string, definition: ISpriteShe
   assert(textures.Pill_Active);
   assert(textures.Pill_Hover);
   
-  const slider = new Slider({
-    id,
-    textures,
-    position:  Matrix.Identity,
-    width: 100
-  });
+  props.textures = textures;
+
+  const slider = new Slider(props);
   
   return slider;
 };

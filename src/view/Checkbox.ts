@@ -1,5 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { ITextureMap, ISpriteSheet, IInteractionPoint, loadImage } from "../util/index";
+import { ITextureMap, ISpriteSheet, IInteractionPoint, loadImage, ILoadProps } from "../util/index";
 import * as Matrix from "../matrix";
 
 
@@ -63,12 +63,16 @@ export class Checkbox extends Sprite implements ICheckbox {
   }
 };
 
-export async function loadCheckbox(id: string, src: string, definition: ISpriteSheet): Promise<ICheckbox> {
-  const img = loadImage(src);
+export interface ILoadCheckboxProps extends ICheckboxProps, ILoadProps {
+  
+}
+
+export async function loadCheckbox(props: ILoadCheckboxProps): Promise<ICheckbox> {
+  const img = loadImage(props.src);
   const textures: ITextureMap = {};
 
   await Promise.all(
-    Object.entries(definition.frames).map(async function([desc, state], i) {
+    Object.entries(props.definition.frames).map(async function([desc, state], i) {
       textures[desc] = await createImageBitmap(
         await img,
         state.frame.x,
@@ -87,11 +91,8 @@ export async function loadCheckbox(id: string, src: string, definition: ISpriteS
     });
   });
 
-  const checkbox = new Checkbox({
-    id,
-    textures,
-    position:  Matrix.Identity,
-  });
+  props.textures = textures;
+  const checkbox = new Checkbox(props);
 
   return checkbox;
 };

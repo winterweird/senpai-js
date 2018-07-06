@@ -1,6 +1,5 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap, ISpriteSheet } from "../util";
-import * as Matrix from "../matrix";
+import { loadImage, ITextureMap, ILoadProps } from "../util";
 
 const assert = require("assert");
 
@@ -51,12 +50,16 @@ export class Button extends Sprite implements IButton {
   }
 };
 
-export async function loadButton(id: string, src: string, definition: ISpriteSheet): Promise<IButton> {
-  const img = loadImage(src);
+export interface ILoadButtonProps extends IButtonProps, ILoadProps {
+
+};
+
+export async function loadButton(props: ILoadButtonProps): Promise<IButton> {
+  const img = loadImage(props.src);
   const textures: ITextureMap = {};
 
   await Promise.all(
-    Object.entries(definition.frames).map(async function([desc, state], i) {
+    Object.entries(props.definition.frames).map(async function([desc, state], i) {
       textures[desc] = await createImageBitmap(
         await img,
         state.frame.x,
@@ -75,11 +78,8 @@ export async function loadButton(id: string, src: string, definition: ISpriteShe
     });
   });
 
-  const button = new Button({
-    id,
-    textures,
-    position:  Matrix.Identity,
-  });
+  props.textures = textures;
+  const button = new Button(props);
   
   return button;
 };

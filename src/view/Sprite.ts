@@ -10,6 +10,10 @@ export interface ISprite extends ISize {
   previousPosition: Float64Array; //a, b, c, d, e, f, alpha, z
   position: Float64Array; //a, b, c, d, e, f, alpha, z
   inverse: Float64Array; //a, b, c, d, e, f
+  alpha: number;
+  interpolatedAlpha: number;
+  previousAlpha: number;
+  z: number;
 
   //animation properties
   interpolatedPosition: Float64Array; //a, b, c, d, e, f, alpha
@@ -33,6 +37,8 @@ export interface ISprite extends ISize {
   setTexture(texture: string): this;
   over(timespan: number, ease: Function): this;
   move(position: number[] | Float64Array): this;
+  setZ(z: number): this;
+  setAlpha(alpha: number): this;
   interpolate(now: number): void;
   skipAnimation(): void;
   update(): void;
@@ -41,22 +47,26 @@ export interface ISprite extends ISize {
   emit(event: string, ...args: any[]): boolean;
   on(event: string, callback: Function): this;
   once(event: string, callback: Function): this;
-}
+};
 
 export interface ISpriteProps {
   id: string;
   position: Float64Array | number[];
   textures?: ITextureMap;
-}
-
-const VisibleIdentity: Float64Array = new Float64Array([1, 0, 0, 1, 0, 0, 1]);
+  alpha?: number;
+  z?: number;
+};
 
 export class Sprite extends EventEmitter implements ISprite {
   id: string = "";
-  position: Float64Array = new Float64Array(8);
-  previousPosition: Float64Array = new Float64Array(8);
-  interpolatedPosition: Float64Array = new Float64Array(7);
+  position: Float64Array = new Float64Array(6);
+  previousPosition: Float64Array = new Float64Array(6);
+  interpolatedPosition: Float64Array = new Float64Array(6);
   inverse: Float64Array = new Float64Array(6);
+  alpha: number = 1;
+  interpolatedAlpha: number = 1;
+  previousAlpha: number = 1;
+  z: number = 0;
 
   animationStart: number = 0;
   ease = easeLinear;
@@ -75,13 +85,17 @@ export class Sprite extends EventEmitter implements ISprite {
   constructor(props: ISpriteProps) {
     super();
     this.id = props.id;
-    const position = props.position || VisibleIdentity;
+    const position = props.position || m.Identity;
     this.textures = props.textures ? props.textures : this.textures;
     m.set(this.position, position);
     m.set(this.previousPosition, position);
     m.set(this.interpolatedPosition, position);
-    if (position.length < 6) {
-      this.position[6] = 1; //visible
+
+    if (props.hasOwnProperty('alpha')) {
+      this.previousAlpha = this.alpha = this.interpolatedAlpha = props.alpha;
+    }
+    if (props.hasOwnProperty('z')) {
+      this.z = props.z;
     }
   }
   broadPhase(point: IInteractionPoint): boolean {
@@ -100,8 +114,6 @@ export class Sprite extends EventEmitter implements ISprite {
     this.previousPosition[3] = this.interpolatedPosition[3];
     this.previousPosition[4] = this.interpolatedPosition[4];
     this.previousPosition[5] = this.interpolatedPosition[5];
-    this.previousPosition[6] = this.interpolatedPosition[6];
-    this.previousPosition[7] = this.position[7];
 
     this.position[0] = position[0];
     this.position[1] = position[1];
@@ -109,9 +121,15 @@ export class Sprite extends EventEmitter implements ISprite {
     this.position[3] = position[3];
     this.position[4] = position[4];
     this.position[5] = position[5];
-    this.position[6] = position[6];
-    this.position[7] = position[7];
-
+    return this;
+  }
+  setAlpha(alpha: number): this {
+    this.previousAlpha = this.interpolatedAlpha;
+    this.alpha = alpha;
+    return this;
+  }
+  setZ(z: number): this {
+    this.z = z;
     return this;
   }
   over(timespan: number, ease?: (ratio: number) => number): this {
@@ -123,13 +141,13 @@ export class Sprite extends EventEmitter implements ISprite {
   keyStateChange(key: IKeyState): void {
 
   }
-  skipAnimation() {
+  skipAnimation(): void {
     this.animationLength = 0;
   }
   update(): void {
     
   }
-  interpolate(now: number) {
+  interpolate(now: number): void {
     const progress = now - this.animationStart
     const ratio = (progress >= this.animationLength)
         ? 1
@@ -142,12 +160,14 @@ export class Sprite extends EventEmitter implements ISprite {
       this.interpolatedPosition[3] = this.position[3];
       this.interpolatedPosition[4] = this.position[4];
       this.interpolatedPosition[5] = this.position[5];
-      this.interpolatedPosition[6] = this.position[6];
+      this.interpolatedAlpha = this.alpha;
+      
     } else {
-      for (let j = 0; j < 7; j++) {
+      for (let j = 0; j < 6; j++) {
         this.interpolatedPosition[j] = this.previousPosition[j]
           + ratio * (this.position[j] - this.previousPosition[j]);
       }
+      this.interpolatedAlpha = this.previousAlpha + ratio * (this.alpha - this.previousAlpha);
     }
 
     m.inverse(this.interpolatedPosition, this.inverse);

@@ -126,6 +126,8 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
       }
       sprite.active = false;
       point.active = null;
+    } else {
+      this.emit("click", this, point);
     }
   }
   private pointDown(point: IInteractionPoint, e: MouseEvent | Touch) {
@@ -183,4 +185,4 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
       }
     }
   }
-}
+};
