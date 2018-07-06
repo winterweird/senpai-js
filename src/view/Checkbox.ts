@@ -1,7 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { ITextureMap, ISpriteSheet, IInteractionPoint, loadImage, ILoadProps } from "../util/index";
-import * as Matrix from "../matrix";
-
+import { ITextureMap, IInteractionPoint, loadImage, ILoadProps, createTextureMap } from "../util/index";
 
 const assert = require("assert");
 
@@ -69,19 +67,7 @@ export interface ILoadCheckboxProps extends ICheckboxProps, ILoadProps {
 
 export async function loadCheckbox(props: ILoadCheckboxProps): Promise<ICheckbox> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, state], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        state.frame.x,
-        state.frame.y,
-        state.frame.w,
-        state.frame.h,
-      );
-    })
-  );
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
 
   ["Active", "Inactive"].forEach(active => {
     ["Hover", "NoHover"].forEach(hover => {

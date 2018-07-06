@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { ISize, IInteractionPoint } from "../util/index";
 import { ISprite } from "./Sprite";
+import { transformPoint } from "../matrix";
 
 export interface ITouchIndex {
   [id: string]: IInteractionPoint;
@@ -118,7 +119,9 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
     if (point.active) {
       let sprite: ISprite = point.active;
       sprite.interpolate(Date.now());
-      if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
+
+      transformPoint(point, sprite.inverse);
+      if (sprite.broadPhase(point) && sprite.narrowPhase(point) === sprite) {
         sprite.clicked = true;
         sprite.pointCollision(point);
         sprite.emit("point-move", sprite, point);

@@ -1,6 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { IInteractionPoint, loadImage, ITextureMap, ISpriteSheet, ILoadProps } from "../util";
-import * as Matrix from "../matrix";
+import { IInteractionPoint, loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 
 const assert = require("assert");
 
@@ -46,18 +45,20 @@ export class Slider extends Sprite implements ISlider {
     }
     return super.broadPhase(point);
   }
-  narrowPhase(point: IInteractionPoint): boolean {
+  narrowPhase(point: IInteractionPoint): ISprite {
     if (this.active) {
-      return true;
+      return this;
     }
     const sliderDistance = this.width - this.textures.Pill_Hover.width;
     const sliderValuePercent = (this.value - this.min) / (this.max - this.min);
     const valueX = sliderDistance * sliderValuePercent;
 
-    return point.ty <= this.textures.Pill_Hover.height
+    if(point.ty <= this.textures.Pill_Hover.height
       && point.ty >= 0
       && point.tx >= valueX
-      && point.tx <= valueX + this.textures.Pill_Hover.width;
+      && point.tx <= valueX + this.textures.Pill_Hover.width) {
+        return this;
+      }
   }
   pointCollision(point: IInteractionPoint): boolean {
     super.pointCollision(point);
@@ -109,29 +110,16 @@ export interface ILoadSliderProps extends ISliderProps, ILoadProps {
 
 export async function loadSlider(props: ILoadSliderProps): Promise<ISlider> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, state], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        state.frame.x,
-        state.frame.y,
-        state.frame.w,
-        state.frame.h,
-      );
-    })
-  );
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
   assert(textures.Line_Cap_Left);
   assert(textures.Line_Cap_Right);
   assert(textures.Line);
   assert(textures.Pill);
   assert(textures.Pill_Active);
   assert(textures.Pill_Hover);
-  
+
   props.textures = textures;
 
   const slider = new Slider(props);
-  
   return slider;
 };

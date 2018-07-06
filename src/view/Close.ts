@@ -1,6 +1,6 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap, ISpriteSheet, ILoadProps } from "../util";
-import * as Matrix from "../matrix";
+import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
+
 
 const assert = require("assert");
 
@@ -30,19 +30,7 @@ export interface ILoadCloseProps extends ICloseProps, ILoadProps {
 
 export async function loadClose(props: ILoadCloseProps): Promise<IClose> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, state], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        state.frame.x,
-        state.frame.y,
-        state.frame.w,
-        state.frame.h,
-      );
-    })
-  );
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
 
   ["Active", "Inactive"].forEach(active => {
     ["Hover", "NoHover"].forEach(hover => {

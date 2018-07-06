@@ -1,5 +1,5 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap, ILoadProps } from "../util";
+import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 
 const assert = require("assert");
 
@@ -7,6 +7,7 @@ export interface IButton extends ISprite {
   selected: boolean;
   font: string;
   fontColor: string;
+  fontSize: number;
   text: string;
 };
 
@@ -14,6 +15,7 @@ export interface IButtonProps extends ISpriteProps {
   selected?: boolean;
   font?: string;
   fontColor?: string;
+  fontSize?: number;
   text?: string;
 };
 
@@ -21,6 +23,7 @@ export class Button extends Sprite implements IButton {
   selected: boolean = false;
   font: string = "monospace";
   fontColor: string = "black";
+  fontSize: number = 12;
   text: string =  ""
 
   constructor(props: IButtonProps) {
@@ -28,6 +31,7 @@ export class Button extends Sprite implements IButton {
     this.selected = props.selected || false;
     this.font = props.font || this.font;
     this.fontColor = props.fontColor || this.fontColor;
+    this.fontSize = props.fontSize || this.fontSize;
     this.text = props.text || this.text;
   }
   update() {
@@ -44,7 +48,7 @@ export class Button extends Sprite implements IButton {
     ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
-    ctx.font = `${this.texture.height * 0.5}px ${this.font}`;
+    ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);
   }
@@ -56,19 +60,7 @@ export interface ILoadButtonProps extends IButtonProps, ILoadProps {
 
 export async function loadButton(props: ILoadButtonProps): Promise<IButton> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, state], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        state.frame.x,
-        state.frame.y,
-        state.frame.w,
-        state.frame.h,
-      );
-    })
-  );
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
 
   ["Active", "Inactive"].forEach(active => {
     ["Hover", "NoHover"].forEach(hover => {

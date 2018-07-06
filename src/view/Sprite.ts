@@ -1,11 +1,13 @@
-import { IInteractionPoint, IKeyState, ISize, ITextureMap } from "../util/index";
+import { IInteractionPoint, IKeyState, ISize, ITextureMap, ILoadProps, loadImage, createTextureMap } from "../util/index";
 import { easeLinear } from "../ease";
 import { EventEmitter } from "events";
 import * as m from "../matrix";
+import { IStage } from "./Stage";
 const assert = require("assert");
 
 export interface ISprite extends ISize {
   id: string;
+  parent: IStage | ISprite;
 
   previousPosition: Float64Array; //a, b, c, d, e, f, alpha, z
   position: Float64Array; //a, b, c, d, e, f, alpha, z
@@ -16,6 +18,7 @@ export interface ISprite extends ISize {
   z: number;
 
   //animation properties
+  lastInterpolated: number;
   interpolatedPosition: Float64Array; //a, b, c, d, e, f, alpha
   animationStart: number;
   animationLength: number;
@@ -25,7 +28,7 @@ export interface ISprite extends ISize {
   cursor: "pointer" | "default";
 
   broadPhase(point: IInteractionPoint): boolean;
-  narrowPhase(point: IInteractionPoint): boolean; //narrowPhase point collision detection
+  narrowPhase(point: IInteractionPoint): ISprite; //narrowPhase point collision detection
   pointCollision(point: IInteractionPoint): boolean;
   keyStateChange(key: IKeyState): void;
   active: boolean; //controlled by the stage
@@ -67,7 +70,9 @@ export class Sprite extends EventEmitter implements ISprite {
   interpolatedAlpha: number = 1;
   previousAlpha: number = 1;
   z: number = 0;
+  parent: ISprite = null;
 
+  lastInterpolated: number = 0;
   animationStart: number = 0;
   ease = easeLinear;
   cursor: ("pointer" | "default") = "default";
@@ -101,8 +106,8 @@ export class Sprite extends EventEmitter implements ISprite {
   broadPhase(point: IInteractionPoint): boolean {
     return point.tx >= 0 && point.tx <= this.width && point.ty >= 0 && point.ty <= this.height;
   }
-  narrowPhase(point: IInteractionPoint): boolean {
-    return true;
+  narrowPhase(point: IInteractionPoint): ISprite {
+    return this;
   }
   pointCollision(point: IInteractionPoint): boolean {
     return true;
@@ -148,6 +153,11 @@ export class Sprite extends EventEmitter implements ISprite {
     
   }
   interpolate(now: number): void {
+    if (now <= this.lastInterpolated) {
+      return;
+    }
+    this.lastInterpolated = now;
+
     const progress = now - this.animationStart
     const ratio = (progress >= this.animationLength)
         ? 1
@@ -171,6 +181,14 @@ export class Sprite extends EventEmitter implements ISprite {
     }
 
     m.inverse(this.interpolatedPosition, this.inverse);
+
+    if (this.parent) {
+      this.parent.interpolate(now);
+      m.chain()
+        .transform(this.parent.inverse)
+        .transform(this.inverse)
+        .set(this.inverse);
+    }
   }
   setTexture(texture: string): this {
     assert(this.textures[texture]);
@@ -191,3 +209,13 @@ export class Sprite extends EventEmitter implements ISprite {
   }
 };
 
+export interface ILoadSpriteProps extends ISpriteProps, ILoadProps {
+  
+};
+
+export async function loadSprite(props: ILoadSpriteProps) {
+  const img = loadImage(props.src);
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
+  props.textures = textures;
+  return new Sprite(props)
+};

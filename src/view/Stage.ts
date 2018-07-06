@@ -2,10 +2,10 @@
 import { ISprite } from "./Sprite";
 
 import { ISoundSprite } from "./SoundSprite"
-import { transformPoints, transformPoint } from "../matrix/index";
+import { transformPoint } from "../matrix/index";
 import { StageInteractionManager, IStageInteractionManagerProps } from "./StageInteractionManager";
 import { IInteractionPoint } from "../util/index";
-import { TAU } from "../ease/consts";
+
 
 export interface IStageProps extends IStageInteractionManagerProps {
   audioContext: AudioContext;
@@ -21,7 +21,7 @@ export interface IStage {
   render(): IStage;
 };
 
-const sortZ = (a: ISprite, b: ISprite): number => a.position[7] - b.position[7];
+const sortZ = (a: ISprite, b: ISprite): number => a.z - b.z;
 
 export class Stage extends StageInteractionManager {
   constructor(props: IStageProps) {
@@ -94,7 +94,7 @@ export class Stage extends StageInteractionManager {
         sprite.hover = false;
         transformPoint(point, sprite.inverse);
         point.captured = true;
-        if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
+        if (sprite.broadPhase(point) && sprite === sprite.narrowPhase(point)) {
           sprite.hover = true;
           sprite.emit("point-move", sprite, point)
           sprite.pointCollision(point);
@@ -102,8 +102,7 @@ export class Stage extends StageInteractionManager {
       }
     }
 
-    
-    for(let i = 0; i < this.sprites.length; i++) {
+    for(let i = this.sprites.length - 1; i >= 0; i--) {
       sprite = this.sprites[i];
       if (sprite.active) {
         continue;
@@ -120,13 +119,19 @@ export class Stage extends StageInteractionManager {
         }
         transformPoint(point, sprite.inverse);
 
-        if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
+        if (sprite.broadPhase(point)) {
+          sprite = sprite.narrowPhase(point);
+          if (!sprite) {
+            continue;
+          }
+
           if (point.firstDown) {
             sprite.active = true;
             point.active = sprite;
-            point.captured = true;
             sprite.emit("active", sprite, point);
           }
+
+          point.captured = true;
           sprite.hover = true;
           sprite.emit("point-move", sprite, point)
           sprite.pointCollision(point);

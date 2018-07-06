@@ -1,8 +1,5 @@
 import { Sprite, ISpriteProps, ISprite } from "./Sprite";
-import { ITextureMap, ISpriteSheet, loadImage, ILoadProps } from "../util";
-import * as Matrix from "../matrix";
-const images = require("../../assets/characters/**/*.png");
-const json = require("../../assets/characters/**/*.json");
+import { loadImage, ILoadProps, createTextureMap } from "../util";
 const assert = require("assert");
 
 
@@ -29,18 +26,8 @@ export interface ILoadCharacterProps extends ICharacterProps, ILoadProps {
 }
 export async function loadCharacter(props: ILoadCharacterProps): Promise<ICharacter> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, mood], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        mood.frame.x,
-        mood.frame.y,
-        mood.frame.w,
-        mood.frame.h,
-      );
-    })
-  );
+  
+  const textures = await createTextureMap(props.definition, img);
 
   assert(textures.Neutral);
   props.textures = textures;

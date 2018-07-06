@@ -14,7 +14,7 @@ export interface IMatrix {
 export class Matrix implements IMatrix {
   value: number[] | Float64Array = Identity;
   constructor(value?: number[] | Float64Array) {
-    this.value = value || this.value;
+    this.value = value || new Float64Array(Identity);
   }
 
   translate(x: number, y: number): this {
@@ -202,6 +202,6 @@ export function set(
   }
 };
 
-export function chain(value: Float64Array | number[]): IMatrix {
+export function chain(value?: Float64Array | number[]): IMatrix {
   return new Matrix(value);
 };

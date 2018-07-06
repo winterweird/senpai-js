@@ -1,5 +1,5 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { IPadding, ILoadProps, loadImage, ITextureMap } from "../util";
+import { IPadding, ILoadProps, loadImage, ITextureMap, createTextureMap } from "../util";
 import splitToWords from "split-to-words";
 
 const assert = require("assert");
@@ -58,14 +58,13 @@ export class Textbox extends Sprite implements ITextbox {
     this.fontColor = props.fontColor || this.fontColor;
     this.lineHeight = props.lineHeight || this.lineHeight;
 
-    this.setTexture("Textbox");
+    this.setTexture("Texture");
   }
   private interpolatedText: Array<string> = [""];
 
   update() {
     const maxWidth = this.texture.width - this.padding.left - this.padding.right;
-    this.textIndex += this.textSpeed;
-
+    this.textIndex = Math.min(this.text.length, this.textIndex + this.textSpeed);
     const words = splitToWords(this.text.slice(0, Math.floor(this.textIndex)));
     this.interpolatedText = [""];
 
@@ -120,19 +119,7 @@ export interface ILoadTextboxProps extends ITextboxProps, ILoadProps {
 
 export async function loadButton(props: ILoadTextboxProps): Promise<ITextbox> {
   const img = loadImage(props.src);
-  const textures: ITextureMap = {};
-
-  await Promise.all(
-    Object.entries(props.definition.frames).map(async function([desc, state], i) {
-      textures[desc] = await createImageBitmap(
-        await img,
-        state.frame.x,
-        state.frame.y,
-        state.frame.w,
-        state.frame.h,
-      );
-    })
-  );
+  const textures: ITextureMap = await createTextureMap(props.definition, img);
 
   assert(textures.Texture);
 

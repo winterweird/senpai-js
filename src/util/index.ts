@@ -117,3 +117,19 @@ export interface IPadding {
   top: number;
   bottom: number;
 };
+
+export async function createTextureMap(definition: ISpriteSheet, img: Promise<ImageBitmap>) {
+  const textures: ITextureMap = {};
+  await Promise.all(
+    Object.entries(definition.frames).map(async function([desc, frame], i) {
+      textures[desc] = await createImageBitmap(
+        await img,
+        frame.frame.x,
+        frame.frame.y,
+        frame.frame.w,
+        frame.frame.h,
+      );
+    })
+  );
+  return textures;
+};

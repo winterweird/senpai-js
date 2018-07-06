@@ -1,10 +1,11 @@
 import { Stage, IStageProps } from "./view/Stage";
 import * as m from "./matrix";
 import config from "../application.config";
-import { loadSlider } from "./view/Slider";
+
 import { loadButton } from "./view/Button";
-import { loadCheckbox } from "./view/Checkbox";
+
 import { loadFonts } from "./view/fonts";
+import { loadPanel } from "./view/Panel";
 const fonts = require("../assets/fonts/*.otf");
 
 const props: IStageProps = {
@@ -17,46 +18,35 @@ const stage = new Stage(props);
 
 (async function() {
   await loadFonts(fonts);
+  const b = await loadButton({
+    src: require("../assets/button/spritesheet.png"),
+    definition: require("../assets/button/index.json"),
+    id: "off-panel",
+    position: m.chain().translate(50, 100).value,
+    z: 3,
+  });
+  const b2 = await loadButton({
+    src: require("../assets/button/spritesheet.png"),
+    definition: require("../assets/button/index.json"),
+    id: "on-panel",
+    position: m.Identity,
+    z: 1
+  });
+  const p = await loadPanel({
+    src: require("../assets/panel/spritesheet.png"),
+    definition: require("../assets/panel/index.json"),
+    id: "panel",
+    position: m.chain().translate(100, 100).value,
+    z: 4
+  });
+  
+  b.on("click", e => console.log("b was clicked"));
+  b2.on("click", e => console.log("b2 was clicked"));
 
-  const slider = await loadSlider(
-    "test",
-    require("../assets/slider/spritesheet.png"),
-    require("../assets/slider/index.json"),
-  );
-
-  m.chain(slider.position)
-    .translate(100, 100)
-    .set(slider.previousPosition);
-  slider.max = 1;
-  slider.min = 0;
-  slider.width = 100;
-
-  const button = await loadButton(
-    "test-button",
-    require("../assets/button/spritesheet.png"),
-    require("../assets/button/index.json"),
-  );
-
-  m.chain(button.position)
-    .translate(100, 200)
-    .set(button.previousPosition);
-  button.on("click", e => button.selected = !button.selected);
-  button.text = "testing";
-  button.fontColor = "green";
-  button.font = "Puritain-Bold";
-
-  const cb = await loadCheckbox(
-    "text-cb",
-    require("../assets/checkbox/spritesheet.png"),
-    require("../assets/checkbox/index.json"),
-  );
-  m.chain(cb.position)
-    .translate(100, 300)
-    .set(cb.previousPosition);
-
-  stage.addSprite(button);
-  stage.addSprite(slider);
-  stage.addSprite(cb);
+  p.addSprite(b2);
+  stage
+    .addSprite(b)
+    .addSprite(p);
 }());
 
 function frame() {
