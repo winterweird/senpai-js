@@ -38,6 +38,7 @@ export interface ISprite extends ISize {
   update(): void;
   render(ctx: CanvasRenderingContext2D): void;
 
+  emit(event: string, ...args: any[]): boolean;
   on(event: string, callback: Function): this;
   once(event: string, callback: Function): this;
 }
@@ -90,17 +91,6 @@ export class Sprite extends EventEmitter implements ISprite {
     return true;
   }
   pointCollision(point: IInteractionPoint): boolean {
-    this.clicked = point.clicked;
-    this.down = point.down;
-    this.hover = true;
-    point.captured = true;
-    this.emit("point-move", point);
-    if (point.clicked && point.active === this) {
-      super.emit("click", point);
-    }
-    if (point.firstDown) {
-      super.emit("active", this);
-    }
     return true;
   }
   move(position: number[] | Float64Array): this {

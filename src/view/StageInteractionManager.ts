@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { ISize, IInteractionPoint } from "../util/index";
+import { ISprite } from "./Sprite";
 
 export interface ITouchIndex {
   [id: string]: IInteractionPoint;
@@ -59,75 +60,113 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
   }
   private touchStart(e: TouchEvent): void {
     const { changedTouches } = e;
-    const rect: ClientRect = this.canvas.getBoundingClientRect();
 
     for (let i = 0; i < changedTouches.length; i++) {
-      let touch = changedTouches[1]
+      let touch = changedTouches[i];
       if (touch.target === this.canvas) {
-        const point: IInteractionPoint = {
-          id: touch.identifier.toString(),
-          x: touch.clientX - rect.left,
-          y: touch.clientY - rect.top,
-          captured: false,
-          down: true,
-          clicked: false,
-          type: "Touch",
-          active: null,
-          firstDown: true,
-          tx: 0,
-          ty: 0,
-        };
-        this.pointIndex[touch.identifier.toString()] = point;
-        this.points.push(point);
+        this.pointStart(touch);
       }
     }
   }
   private touchMove(e: TouchEvent): void {
     const { changedTouches } = e;
-    const rect: ClientRect = this.canvas.getBoundingClientRect();
 
     for (let i = 0; i < changedTouches.length; i++) {
       let touch = changedTouches[1];
       if (touch.target === this.canvas) {
         const point = this.pointIndex[touch.identifier.toString()];
-        point.x = touch.clientX - rect.left;
-        point.y = touch.clientY - rect.top;
+        this.pointMove(point, touch);
       }
     }
   }
   private touchEnd(e: TouchEvent) {
     const { changedTouches } = e;
-    const rect: ClientRect = this.canvas.getBoundingClientRect();
 
     for (let i = 0; i < changedTouches.length; i++) {
       let touch = changedTouches[1];
       if (touch.target === this.canvas) {
         const point = this.pointIndex[touch.identifier.toString()];
-        point.x = touch.clientX - rect.left;
-        point.y = touch.clientY - rect.top;
-        point.down = false;
-        point.clicked = true;
-        if (point.active) {
-          point.active.active = false;
-        }
+        this.pointUp(point, touch);
+        this.pointCancel(point, touch);
       }
     }
   }
   private touchCancel(e: TouchEvent): void {
     const { changedTouches } = e;
-    const rect: ClientRect = this.canvas.getBoundingClientRect();
 
     for (let i = 0; i < changedTouches.length; i++) {
       let touch = changedTouches[1];
       if (touch.target === this.canvas) {
         const point = this.pointIndex[touch.identifier.toString()];
-        point.x = touch.clientX - rect.left;
-        point.y = touch.clientY - rect.top;
-        point.down = false;
-        if (point.active) {
-          point.active.active = false;
-        }
+        this.pointCancel(point, touch);
       }
+    }
+  }
+  private mouseUp(e: MouseEvent): void {
+    return this.pointUp(this.mousePoint, e);
+  }
+  private mouseDown(e: MouseEvent): void {
+    return this.pointDown(this.mousePoint, e);
+  }
+  private mouseMove(e: MouseEvent): void {
+    return this.pointMove(this.mousePoint, e);
+  }
+  private pointUp(point: IInteractionPoint, e: MouseEvent | Touch): void {
+    this.pointMove(point, e);
+    point.clicked = true;
+    point.down = false;
+    if (point.active) {
+      let sprite: ISprite = point.active;
+      sprite.interpolate(Date.now());
+      if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
+        sprite.clicked = true;
+        sprite.pointCollision(point);
+        sprite.emit("point-move", sprite, point);
+        sprite.emit("click", sprite, point);
+      }
+      sprite.active = false;
+      point.active = null;
+    }
+  }
+  private pointDown(point: IInteractionPoint, e: MouseEvent | Touch) {
+    if (!point.down) {
+      point.firstDown = true;
+    }
+    point.down = true;
+
+    return this.pointMove(point, e);
+  }
+  private pointMove(point: IInteractionPoint, e: MouseEvent | Touch) {
+    const rect: ClientRect = this.canvas.getBoundingClientRect();
+    point.x = e.clientX - rect.left;
+    point.y = e.clientY - rect.top;
+  }
+  private pointStart(e: Touch) {
+    const point: IInteractionPoint = {
+      id: e.identifier.toString(),
+      x: 0,
+      y: 0,
+      captured: false,
+      down: false,
+      clicked: false,
+      type: "Touch",
+      active: null,
+      firstDown: false,
+      tx: 0,
+      ty: 0,
+    };
+    this.pointIndex[e.identifier.toString()] = point;
+    this.points.push(point);
+    return this.pointDown(point, e);
+  }
+  private pointCancel(point: IInteractionPoint, e: Touch) {
+    if (point.active) {
+      point.active.active = false;
+    }
+    delete this.pointIndex[e.identifier.toString()];
+    const index = this.points.indexOf(point);
+    if (index !== -1) {
+      this.points.splice(index, 1);
     }
   }
   protected cleanUp(): void {
@@ -143,30 +182,5 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
         i -= 1;
       }
     }
-  }
-  private mouseUp(e: MouseEvent): void {
-    if (this.mousePoint.down) {
-      this.mousePoint.clicked = true;
-    }
-    if (this.mousePoint.active) {
-      this.mousePoint.active.active = false;
-    }
-    this.mousePoint.down = false;
-    return this.mouseMove(e);
-  }
-  private mouseDown(e: MouseEvent): void {
-    if (!this.mousePoint.down) {
-      this.mousePoint.firstDown = true;
-    }
-    this.mousePoint.down = true;
-
-    e.preventDefault();
-    return this.mouseMove(e);
-  }
-  private mouseMove(e: MouseEvent): void {
-    const rect: ClientRect = this.canvas.getBoundingClientRect();
-    this.mousePoint.x = e.clientX - rect.left;
-    this.mousePoint.y = e.clientY - rect.top;
-    e.preventDefault();
   }
 }

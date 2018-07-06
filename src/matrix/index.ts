@@ -180,20 +180,18 @@ export function transformPoints(
   points: IInteractionPoint[],
   matrix: Float64Array | number[],
 ): void {
-  const a: number = matrix[0],
-    b: number = matrix[1],
-    c: number = matrix[2],
-    d: number = matrix[3],
-    e: number = matrix[4],
-    f: number = matrix[5];
-
-  let point: IInteractionPoint;
   for (let i = 0; i < points.length; i++) {
-    point = points[i];
-    point.tx = a * point.x + c * point.y + e;
-    point.ty = b * point.x + d * point.y + f;
+    transformPoint(points[i], matrix);
   }
 };
+
+export function transformPoint(
+  point: IInteractionPoint,
+  matrix: Float64Array | number[],
+): void {
+  point.tx = matrix[0] * point.x + matrix[2] * point.y + matrix[4];
+  point.ty = matrix[1] * point.x + matrix[3] * point.y + matrix[5];
+}
 
 export function set(
   target: Float64Array | number[],

@@ -2,7 +2,7 @@
 import { ISprite } from "./Sprite";
 
 import { ISoundSprite } from "./SoundSprite"
-import { transformPoints } from "../matrix/index";
+import { transformPoints, transformPoint } from "../matrix/index";
 import { StageInteractionManager, IStageInteractionManagerProps } from "./StageInteractionManager";
 import { IInteractionPoint } from "../util/index";
 import { TAU } from "../ease/consts";
@@ -83,25 +83,54 @@ export class Stage extends StageInteractionManager {
 
     super.emit("pre-collision");
     let point: IInteractionPoint, sprite: ISprite;
+
+    //eliminate active points/sprites
+    for(let i = 0; i < this.points.length; i++) {
+      point = this.points[i];
+      if (point.active) {
+        sprite = point.active;
+        sprite.down = false;
+        sprite.clicked = false;
+        sprite.hover = false;
+        transformPoint(point, sprite.inverse);
+        point.captured = true;
+        if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
+          sprite.hover = true;
+          sprite.emit("point-move", sprite, point)
+          sprite.pointCollision(point);
+        }
+      }
+    }
+
+    
     for(let i = 0; i < this.sprites.length; i++) {
       sprite = this.sprites[i];
+      if (sprite.active) {
+        continue;
+      }
+
       sprite.down = false;
       sprite.clicked = false;
       sprite.hover = false;
 
-      transformPoints(this.points, sprite.inverse);
       for(let j = 0; j < this.points.length; j++) {
         point = this.points[j];
         if (point.captured) {
           continue;
         }
+        transformPoint(point, sprite.inverse);
 
         if (sprite.broadPhase(point) && sprite.narrowPhase(point)) {
           if (point.firstDown) {
             sprite.active = true;
             point.active = sprite;
+            point.captured = true;
+            sprite.emit("active", sprite, point);
           }
+          sprite.hover = true;
+          sprite.emit("point-move", sprite, point)
           sprite.pointCollision(point);
+          sprite.down = point.down;
           break;
         }
       }
