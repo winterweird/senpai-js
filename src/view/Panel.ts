@@ -95,7 +95,6 @@ export class Panel extends Sprite implements IPanel {
   render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
     let sprite: ISprite;
-    ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, this.width, this.height);
     ctx.clip();
@@ -111,12 +110,10 @@ export class Panel extends Sprite implements IPanel {
         sprite.interpolatedPosition[4],
         sprite.interpolatedPosition[5],
       );
-      ctx.globalAlpha = sprite.interpolatedAlpha;
+      ctx.globalAlpha *= sprite.interpolatedAlpha;
       sprite.render(ctx);
       ctx.restore();
     }
-
-    ctx.restore();
   }
 };
 

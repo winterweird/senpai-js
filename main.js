@@ -14,7 +14,9 @@ function createWindow () {
     width: config.window.width,
     height: config.window.height,
   });
-
+  mainWindow.maximize();
+  mainWindow.setFullScreen(true);
+  
   const PROTOCOL = "file";
   mainWindow.loadURL(
     url.format({
@@ -23,7 +25,7 @@ function createWindow () {
       slashes: true,
     })
   );
-  
+
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
     // // Strip protocol
     let url = request.url.substr(PROTOCOL.length + 1);

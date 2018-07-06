@@ -5,6 +5,8 @@ export interface ILabel extends ISprite {
   font: string;
   fontSize: number;
   fontColor: string;
+  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign: "left" | "right" | "center" | "start" | "end";
 };
 
 export interface ILabelProps extends ISpriteProps {
@@ -12,6 +14,8 @@ export interface ILabelProps extends ISpriteProps {
   font?: string;
   fontSize?: number;
   fontColor?: string;
+  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign?: "left" | "right" | "center" | "start" | "end";
 };
 
 const tempctx = document.createElement("canvas").getContext("2d");
@@ -21,6 +25,8 @@ export class Label extends Sprite implements ILabel {
   font: string = "monospace";
   fontSize: number = 12;
   fontColor: string = "black";
+  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
+  textAlign: "left" | "right" | "center" | "start" | "end" = "start";
 
   constructor(props: ILabelProps) {
     super(props);
@@ -28,6 +34,8 @@ export class Label extends Sprite implements ILabel {
     this.font = props.font || this.font;
     this.fontSize = props.fontSize || this.fontSize;
     this.fontColor = props.fontColor || this.fontColor;
+    this.textBaseline = props.textBaseline || this.textBaseline;
+    this.textAlign = props.textAlign || this.textAlign;
   }
   update() {
     this.height = this.fontSize;
@@ -36,8 +44,8 @@ export class Label extends Sprite implements ILabel {
   }
   render(ctx: CanvasRenderingContext2D) {
     ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
-    ctx.textBaseline = "hanging";
-    ctx.textAlign = "left";
+    ctx.textBaseline = this.textBaseline;
+    ctx.textAlign = this.textAlign;
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);

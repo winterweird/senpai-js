@@ -22,7 +22,7 @@ const stage = new Stage(props);
     src: require("../assets/button/spritesheet.png"),
     definition: require("../assets/button/index.json"),
     id: "off-panel",
-    position: m.chain().translate(50, 100).value,
+    position: m.chain().translate(50, 150).value,
     z: 3,
   });
   const b2 = await loadButton({

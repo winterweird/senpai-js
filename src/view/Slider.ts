@@ -111,6 +111,7 @@ export interface ILoadSliderProps extends ISliderProps, ILoadProps {
 export async function loadSlider(props: ILoadSliderProps): Promise<ISlider> {
   const img = loadImage(props.src);
   const textures: ITextureMap = await createTextureMap(props.definition, img);
+
   assert(textures.Line_Cap_Left);
   assert(textures.Line_Cap_Right);
   assert(textures.Line);

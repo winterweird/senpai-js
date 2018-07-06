@@ -4,20 +4,20 @@
       "frame":{
         "x":0,
         "y":0,
-        "w":800,
-        "h":600
+        "w":960,
+        "h":540
       },
       "rotated":false,
       "trimmed":false,
       "spriteSourceSize":{
         "x":0,
         "y":0,
-        "w":800,
-        "h":600
+        "w":960,
+        "h":540
       },
       "sourceSize":{
-        "w":800,
-        "h":600
+        "w":960,
+        "h":540
       }
     }
   },
@@ -26,8 +26,8 @@
     "version":"Leshy SpriteSheet Tool v0.8.4",
     "image":"spritesheet.png",
     "size":{
-      "w":800,
-      "h":600
+      "w":960,
+      "h":540
     },
     "scale":1
   }

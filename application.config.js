@@ -1,6 +1,6 @@
 module.exports = {
   window: {
-    width: 980,
+    width: 1280,
     height: 720,
   },
   ui: {
