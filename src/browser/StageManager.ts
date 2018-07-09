@@ -364,6 +364,13 @@ export class StageManager extends Stage implements IStageManager {
     }
   }
 
+  private async handleStopSound(event: IStopSoundEvent): Promise<void> {
+    const s: ISoundSprite = this.soundIndex[event.props.id];
+    if (s.playing) {
+      s.stop();
+    }
+  }
+
   private indexAndAdd(child: ISprite, parent: string): void {
     this.index[child.id] = child;
 

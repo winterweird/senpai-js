@@ -81,6 +81,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
       if (sound.loop) {
         this.source.loopStart = sound.start;
         this.source.loopEnd = sound.end;
+        this.source.loop = true;
       }
 
       super.emit("audio-playing", this);
@@ -88,6 +89,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
     }
 
     if (this.paused) {
+      this.started = Date.now() - this.startAt;
       this.source.start(0, sound.start + this.startAt, sound.end);
       this.paused = false;
       super.emit("audio-playing", this);
