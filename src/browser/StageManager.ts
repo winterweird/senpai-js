@@ -1,6 +1,6 @@
 import {  IStage, IStageProps, Stage } from "../view/Stage";
 import { loadCharacter } from "../view/Character";
-import { ISpriteSheet } from "../util";
+import { ISpriteSheet, IInteractionPoint } from "../util";
 import { IPanel, loadPanel } from "../view/Panel";
 import { ISprite, loadSprite } from "../view/Sprite";
 import { loadCheckbox, ICheckbox } from "../view/Checkbox";
@@ -190,7 +190,9 @@ export class StageManager extends Stage implements IStageManager {
     event.props.definition = require("../../assets/checkbox/index.json");
     const c = await loadCheckbox(event.props);
 
-    c.on("toggle", e => this.emit("toggle", c));
+    c.on("toggle", () => {
+      this.emit("toggle", c);
+    });
 
     return this.indexAndAdd(c, event.props.parent);
   }
@@ -219,7 +221,9 @@ export class StageManager extends Stage implements IStageManager {
     event.props.definition = require("../../assets/slider/index.json");
     const s = await loadSlider(event.props);
 
-    s.on("value-change", e => this.emit("value-change", s));
+    s.on("value-change", () => {
+      this.emit("value-change", s);
+    });
 
     return this.indexAndAdd(s, event.props.parent);
   }
@@ -258,6 +262,11 @@ export class StageManager extends Stage implements IStageManager {
     const target: IPanel | IStage = sprite.parent as IPanel || this;
     target.removeSprite(sprite);
     delete this.index[event.props.id];
+    sprite.removeAllListeners("click")
+      .removeAllListeners("point-move")
+      .removeAllListeners("value-change")
+      .removeAllListeners("texture-change")
+      .removeAllListeners("toggle");
   }
 
   private async handleTextboxAppend(event: ITextboxAppendEvent): Promise<void> {
@@ -279,14 +288,22 @@ export class StageManager extends Stage implements IStageManager {
     t.setTexture(event.props.texture);
   }
 
-  private indexAndAdd(sprite: ISprite, parent: string): void {
-    this.index[sprite.id] = sprite;
+  private indexAndAdd(child: ISprite, parent: string): void {
+    this.index[child.id] = child;
 
-    sprite.on("click", e => this.emit("click", sprite))
-      .on("texture-change", e => this.emit("texture-change", sprite))
-      .on("point-move", e => this.emit("point-move", sprite));
+    child.on("click", () => {
+      this.emit("click", child);
+    });
+
+    child.on("texture-change", () => {
+      this.emit("texture-change", child);
+    });
+
+    child.on("point-move", (sprite: ISprite, point: IInteractionPoint) => {
+      this.emit("point-move", sprite, point);
+    });
 
     const target: IStage | IPanel = (this.index[parent] as IPanel) || this;
-    target.addSprite(sprite);
+    target.addSprite(child);
   }
 }

@@ -54,11 +54,13 @@ export interface ISprite extends ISize {
   render(ctx: CanvasRenderingContext2D): void;
   emit(event: string, ...args: any[]): boolean;
 
-  // @ts-ignore: callback should be a function, and it doesn't matter
+  on(event: "point-move", callback: (sprite: ISprite, point: IInteractionPoint) => void);
   on(event: string, callback: () => void): this;
 
-  // @ts-ignore: callback should be a function, and it doesn't matter
+  on(event: "point-move", callback: (sprite: ISprite, point: IInteractionPoint) => void);
   once(event: string, callback: () => void): this;
+
+  removeAllListeners(event: string | symbol): this;
 }
 
 export interface ISpriteProps {
@@ -233,7 +235,7 @@ export interface ILoadSpriteProps extends ISpriteProps, ILoadProps {
 
 }
 
-export async function loadSprite(props: ILoadSpriteProps) {
+export async function loadSprite(props: ILoadSpriteProps): Promise<ISprite> {
   const img = loadImage(props.src);
   const textures: ITextureMap = await createTextureMap(props.definition, img);
   props.textures = textures;
