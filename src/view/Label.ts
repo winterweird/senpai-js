@@ -51,3 +51,11 @@ export class Label extends Sprite implements ILabel {
     ctx.fillText(this.text, 0, 0);
   }
 };
+
+
+
+export async function loadLabel(props: ILabelProps): Promise<ILabel> {
+  const label = new Label(props);
+  
+  return label;
+};

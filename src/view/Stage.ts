@@ -2,9 +2,9 @@
 import { ISprite } from "./Sprite";
 
 import { ISoundSprite } from "./SoundSprite"
-import { transformPoint } from "../matrix/index";
+import { transformPoint } from "../matrix";
 import { StageInteractionManager, IStageInteractionManagerProps } from "./StageInteractionManager";
-import { IInteractionPoint } from "../util/index";
+import { IInteractionPoint } from "../util";
 
 
 export interface IStageProps extends IStageInteractionManagerProps {

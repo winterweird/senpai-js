@@ -115,6 +115,12 @@ export class Panel extends Sprite implements IPanel {
       ctx.restore();
     }
   }
+  skipAnimation(): void {
+    super.skipAnimation();
+    for (let i = 0; i < this.sprites.length; i++) {
+      this.sprites[i].skipAnimation();
+    }
+  }
 };
 
 export interface ILoadPanelProps extends IPanelProps, ILoadProps {

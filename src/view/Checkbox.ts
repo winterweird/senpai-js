@@ -1,5 +1,5 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { ITextureMap, IInteractionPoint, loadImage, ILoadProps, createTextureMap } from "../util/index";
+import { ITextureMap, IInteractionPoint, loadImage, ILoadProps, createTextureMap } from "../util";
 
 const assert = require("assert");
 
@@ -8,6 +8,8 @@ export interface ICheckbox extends ISprite {
   text: string;
   font: string;
   fontColor: string;
+  fontSize: number;
+
   toggle(): this;
 };
 
@@ -16,6 +18,7 @@ export interface ICheckboxProps extends ISpriteProps {
   text?: string;
   font?: string;
   fontColor?: string;
+  fontSize?: number;
 };
 
 export class Checkbox extends Sprite implements ICheckbox {
@@ -23,6 +26,7 @@ export class Checkbox extends Sprite implements ICheckbox {
   text: string = "";
   font: string = "monospace";
   fontColor: string = "black";
+  fontSize: number = 12;
 
   constructor(props: ICheckboxProps) {
     super(props);
@@ -47,7 +51,7 @@ export class Checkbox extends Sprite implements ICheckbox {
     ctx.translate(this.width * 1.1, this.height / 2);
     ctx.textBaseline = "middle";
     ctx.fillStyle = this.fontColor;
-    ctx.font = `${this.height * 0.5}px ${this.font}`;
+    ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillText(this.text, 0, 0);
   }
   update() {

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { ISize, IInteractionPoint } from "../util/index";
+import { ISize, IInteractionPoint } from "../util";
 import { ISprite } from "./Sprite";
 import { transformPoint } from "../matrix";
 

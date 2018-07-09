@@ -23,12 +23,12 @@
     "nearley": "^2.13.0",
     "node-sass": "^4.9.0",
     "npm-run-all": "^4.1.3",
-    "parcel-bundler": "^1.9.3",
-    "typescript": "^2.9.2"
+    "parcel-bundler": "^1.9.3"
   },
   "dependencies": {
     "electron": "^2.0.3",
     "electron-builder": "^20.18.0",
-    "split-to-words": "^1.0.2"
+    "split-to-words": "^1.0.2",
+    "typescript": "^3.0.0-dev.20180707"
   }
 }

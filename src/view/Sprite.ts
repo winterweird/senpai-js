@@ -1,4 +1,4 @@
-import { IInteractionPoint, IKeyState, ISize, ITextureMap, ILoadProps, loadImage, createTextureMap } from "../util/index";
+import { IInteractionPoint, IKeyState, ISize, ITextureMap, ILoadProps, loadImage, createTextureMap } from "../util";
 import { easeLinear } from "../ease";
 import { EventEmitter } from "events";
 import * as m from "../matrix";

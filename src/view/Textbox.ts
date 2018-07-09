@@ -117,7 +117,7 @@ export interface ILoadTextboxProps extends ITextboxProps, ILoadProps {
 
 };
 
-export async function loadButton(props: ILoadTextboxProps): Promise<ITextbox> {
+export async function loadTextbox(props: ILoadTextboxProps): Promise<ITextbox> {
   const img = loadImage(props.src);
   const textures: ITextureMap = await createTextureMap(props.definition, img);
 

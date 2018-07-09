@@ -33,7 +33,7 @@ export class Slider extends Sprite implements ISlider {
     this.max = props.max || this.max;
     this.min = props.min || this.min;
     this.value = props.value || this.value;
-    
+
     this.sliderPattern = document
       .createElement("canvas")
       .getContext("2d")

@@ -24,7 +24,7 @@ export class Button extends Sprite implements IButton {
   font: string = "monospace";
   fontColor: string = "black";
   fontSize: number = 12;
-  text: string =  ""
+  text: string =  "";
 
   constructor(props: IButtonProps) {
     super(props);

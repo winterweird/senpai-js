@@ -133,3 +133,7 @@ export async function createTextureMap(definition: ISpriteSheet, img: Promise<Im
   );
   return textures;
 };
+
+export interface IHasParent {
+  parent: string;
+};
