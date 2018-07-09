@@ -5,4 +5,4 @@ import { IHasParent } from "../util";
 export interface ICreateCharacterEvent extends IWorkerEvent {
   type: "create-character";
   props: ILoadCharacterProps & IHasParent;
-};
+}

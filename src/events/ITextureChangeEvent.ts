@@ -5,5 +5,5 @@ export interface ITextureChangeEvent extends IWorkerEvent {
   props: {
     id: string;
     texture: string;
-  }
-};
+  };
+}

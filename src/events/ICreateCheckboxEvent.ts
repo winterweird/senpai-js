@@ -5,4 +5,4 @@ import { IHasParent } from "../util";
 export interface ICreateCheckboxEvent extends IWorkerEvent {
   type: "create-checkbox";
   props: ILoadCheckboxProps & IHasParent;
-};
+}

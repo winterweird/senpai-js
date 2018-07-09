@@ -5,5 +5,5 @@ export interface ITextboxAppendEvent extends IWorkerEvent {
   props: {
     id: string;
     append: string;
-  }
-};
+  };
+}

@@ -5,4 +5,4 @@ import { IHasParent } from "../util";
 export interface ICreatePanelEvent extends IWorkerEvent {
   type: "create-character";
   props: ILoadPanelProps & IHasParent;
-};
+}

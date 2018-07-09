@@ -5,5 +5,5 @@ export interface ICheckboxCheckedEvent extends IWorkerEvent {
   props: {
     id: string;
     checked: boolean;
-  }
-};
+  };
+}

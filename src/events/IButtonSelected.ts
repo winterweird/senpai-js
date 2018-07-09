@@ -5,5 +5,5 @@ export interface IButtonSelectedEvent extends IWorkerEvent {
   props: {
     id: string;
     selected: boolean;
-  }
-};
+  };
+}

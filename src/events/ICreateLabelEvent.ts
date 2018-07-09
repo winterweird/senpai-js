@@ -5,4 +5,4 @@ import { IHasParent } from "../util";
 export interface ICreateLabelEvent extends IWorkerEvent {
   type: "create-label";
   props: ILabelProps & IHasParent;
-};
+}

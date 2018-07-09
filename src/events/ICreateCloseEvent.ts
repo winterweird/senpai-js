@@ -5,4 +5,4 @@ import { IHasParent } from "../util";
 export interface ICreateCloseEvent extends IWorkerEvent {
   type: "create-close";
   props: ILoadCloseProps & IHasParent;
-};
+}

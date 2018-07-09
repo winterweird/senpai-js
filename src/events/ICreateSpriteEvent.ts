@@ -9,4 +9,4 @@ interface IHasName {
 export interface ICreateSpriteEvent extends IWorkerEvent {
   type: "create-sprite";
   props: ILoadSpriteProps & IHasParent & IHasName;
-};
+}

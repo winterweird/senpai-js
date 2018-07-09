@@ -32,7 +32,7 @@ export class Stage extends StageInteractionManager {
   private sprites: ISprite[] = [];
   private soundSprites: ISoundSprite[] = [];
   private audioContext: AudioContext = null;
-  
+
   addSprite(sprite: ISprite): IStage {
     if (!this.sprites.includes(sprite)) {
       this.sprites.push(sprite);
@@ -138,6 +138,14 @@ export class Stage extends StageInteractionManager {
           sprite.down = point.down;
           break;
         }
+      }
+
+      //capture uncaptured points and emit point-move events
+      for (let i = 0; i < this.points.length; i++) {
+        if (this.points[i].captured) {
+          continue;
+        }
+        super.emit("point-move", this, this.points[i]);
       }
     }
     super.emit("post-collision");

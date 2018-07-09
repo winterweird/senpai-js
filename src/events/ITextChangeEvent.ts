@@ -8,5 +8,5 @@ export interface ITextChangeEvent extends IWorkerEvent {
     fontSize: number;
     fontColor: string;
     text: string;
-  }
-};
+  };
+}
