@@ -29,13 +29,22 @@ import { ITextChangeEvent } from "../events/ITextChangeEvent";
 import { ITextureChangeEvent } from "../events/ITextureChangeEvent";
 import * as easeFuncs from "../ease";
 import { ISkipAnimationEvent } from "../events/ISkipAnimationEvent";
+import { ICreateSoundSpriteEvent } from "../events/ICreateSoundSpriteEvent";
+import { IPlaySoundEvent } from "../events/IPlaySoundEvent";
+import { IPauseSoundEvent } from "../events/IPauseSoundEvent";
+import { IStopSoundEvent } from "../events/IStopSoundEvent";
+import { ISoundSprite, loadSoundSprite, ISoundSpriteSheet } from "../view/SoundSprite";
 
 export interface ISpriteSheetMap {
   [name: string]: { index: ISpriteSheet };
 }
 
-export interface ICharacterSource {
+export interface ICharacterSourceMap {
   [name: string]: { "spritesheet.png": string; };
+}
+
+export interface ISoundSourceMap {
+  [name: string]: string;
 }
 
 export interface IStageManagerProps extends IStageProps {
@@ -46,17 +55,31 @@ export interface ISpriteIndex {
   [id: string]: ISprite;
 }
 
+export interface ISoundSpriteIndex {
+  [id: string]: ISoundSprite;
+}
+
+export interface ISoundSpriteSheetIndex {
+  [id: string]: ISoundSpriteSheet;
+}
+
 export interface IStageManager extends IStage {
   handle(event: IWorkerEvent): Promise<void>;
 }
 
 export class StageManager extends Stage implements IStageManager {
   private static CharacterDefinitions: ISpriteSheetMap = require("../../assets/characters/**/*.json");
-  private static CharacterSources: ICharacterSource = require("../../assets/characters/**/*.png");
+  private static CharacterSources: ICharacterSourceMap = require("../../assets/characters/**/*.png");
   private static SpriteDefinitions: ISpriteSheetMap = require("../../assets/characters/**/*.json");
-  private static SpriteSources: ICharacterSource = require("../../assets/characters/**/*.png");
+  private static SpriteSources: ICharacterSourceMap = require("../../assets/characters/**/*.png");
+  private static mp3s: ISoundSourceMap = require("../../assets/sound/*.mp3");
+  private static oggs: ISoundSourceMap = require("../../assets/sound/*.ogg");
+  private static flacs: ISoundSourceMap = require("../../assets/sound/*.flac");
+  private static wavs: ISoundSourceMap = require("../../assets/sound/*.wav");
+  private static SoundDefinitions: ISoundSpriteSheetIndex = require("../../assets/sound/*.json");
 
   private index: ISpriteIndex = {};
+  private soundIndex: ISoundSpriteIndex = {};
 
   constructor(props: IStageManagerProps) {
     super(props);
@@ -150,6 +173,26 @@ export class StageManager extends Stage implements IStageManager {
 
     if (event.type === "texture-change") {
       await this.handleTextureChange(event as ITextureChangeEvent);
+      return;
+    }
+
+    if (event.type === "create-sound-sprite") {
+      await this.handleCreateSound(event as ICreateSoundSpriteEvent);
+      return;
+    }
+
+    if (event.type === "play-sound") {
+      await this.handlePlaySound(event as IPlaySoundEvent);
+      return;
+    }
+
+    if (event.type === "pause-sound") {
+      await this.handlePauseSound(event as IPauseSoundEvent);
+      return;
+    }
+
+    if (event.type === "stop-sound") {
+      await this.handleStopSound(event as IStopSoundEvent);
       return;
     }
   }
@@ -286,6 +329,39 @@ export class StageManager extends Stage implements IStageManager {
   private async handleTextureChange(event: ITextureChangeEvent): Promise<void> {
     const t: ISprite = this.index[event.props.id];
     t.setTexture(event.props.texture);
+  }
+
+  private async handleCreateSound(event: ICreateSoundSpriteEvent): Promise<void> {
+    const s: ISoundSprite = await loadSoundSprite({
+      buffer: await fetch(
+        StageManager.mp3s[`${event.props.id}.mp3`]
+        || StageManager.oggs[`${event.props.id}.ogg`]
+        || StageManager.flacs[`${event.props.id}.flac`]
+        || StageManager.wavs[`${event.props.id}.wav`],
+      ).then(e => e.arrayBuffer()),
+      context: this.audioContext,
+      definition: StageManager.SoundDefinitions[`${event.props.id}.json`] as ISoundSpriteSheet,
+      id: event.props.id,
+    });
+    this.addSoundSprite(s);
+    this.soundIndex[s.id] = s;
+  }
+
+  private async handlePlaySound(event: IPlaySoundEvent): Promise<void> {
+    const s: ISoundSprite = this.soundIndex[event.props.id];
+    if (s.playing) {
+      s.stop();
+    }
+
+    s.sound = event.props.sound;
+    s.play();
+  }
+
+  private async handlePauseSound(event: IPauseSoundEvent): Promise<void> {
+    const s: ISoundSprite = this.soundIndex[event.props.id];
+    if (s.playing && !s.paused) {
+      s.pause();
+    }
   }
 
   private indexAndAdd(child: ISprite, parent: string): void {

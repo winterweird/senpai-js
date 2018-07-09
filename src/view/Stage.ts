@@ -22,10 +22,10 @@ export interface IStage {
 const sortZ = (a: ISprite, b: ISprite): number => a.z - b.z;
 
 export class Stage extends StageInteractionManager {
+  public audioContext: AudioContext = null;
   private ctx: CanvasRenderingContext2D = this.canvas.getContext("2d");
   private sprites: ISprite[] = [];
   private soundSprites: ISoundSprite[] = [];
-  private audioContext: AudioContext = null;
 
   constructor(props: IStageProps) {
     super(props);
