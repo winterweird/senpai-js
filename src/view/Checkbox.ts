@@ -1,7 +1,6 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
 import { ITextureMap, IInteractionPoint, loadImage, ILoadProps, createTextureMap } from "../util";
-
-const assert = require("assert");
+import assert from "assert";
 
 export interface ICheckbox extends ISprite {
   checked: boolean;
@@ -11,7 +10,7 @@ export interface ICheckbox extends ISprite {
   fontSize: number;
 
   toggle(): this;
-};
+}
 
 export interface ICheckboxProps extends ISpriteProps {
   checked?: boolean;
@@ -19,14 +18,14 @@ export interface ICheckboxProps extends ISpriteProps {
   font?: string;
   fontColor?: string;
   fontSize?: number;
-};
+}
 
 export class Checkbox extends Sprite implements ICheckbox {
-  checked: boolean = false;
-  text: string = "";
-  font: string = "monospace";
-  fontColor: string = "black";
-  fontSize: number = 12;
+  public checked: boolean = false;
+  public text: string = "";
+  public font: string = "monospace";
+  public fontColor: string = "black";
+  public fontSize: number = 12;
 
   constructor(props: ICheckboxProps) {
     super(props);
@@ -35,18 +34,21 @@ export class Checkbox extends Sprite implements ICheckbox {
     this.font = props.font || this.font;
     this.fontColor = props.fontColor || this.fontColor;
   }
-  toggle(): this {
+
+  public toggle(): this {
     this.checked = !this.checked;
     return this;
   }
-  pointCollision(point: IInteractionPoint): boolean {
+
+  public pointCollision(point: IInteractionPoint): boolean {
     if (point.clicked && point.active === this) {
       this.toggle();
       this.emit("toggle", point);
     }
     return super.pointCollision(point);
   }
-  render(ctx: CanvasRenderingContext2D) {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     super.render(ctx);
     ctx.translate(this.width * 1.1, this.height / 2);
     ctx.textBaseline = "middle";
@@ -54,7 +56,8 @@ export class Checkbox extends Sprite implements ICheckbox {
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillText(this.text, 0, 0);
   }
-  update() {
+
+  public update(): void {
     const active = this.active ? "Active" : "Inactive";
     const hover = this.hover ? "Hover" : "NoHover";
     const checked = this.checked ? "Checked" : "Unchecked";
@@ -63,10 +66,10 @@ export class Checkbox extends Sprite implements ICheckbox {
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
   }
-};
+}
 
 export interface ILoadCheckboxProps extends ICheckboxProps, ILoadProps {
-  
+
 }
 
 export async function loadCheckbox(props: ILoadCheckboxProps): Promise<ICheckbox> {
@@ -85,4 +88,4 @@ export async function loadCheckbox(props: ILoadCheckboxProps): Promise<ICheckbox
   const checkbox = new Checkbox(props);
 
   return checkbox;
-};
+}

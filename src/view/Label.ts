@@ -7,7 +7,7 @@ export interface ILabel extends ISprite {
   fontColor: string;
   textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
   textAlign: "left" | "right" | "center" | "start" | "end";
-};
+}
 
 export interface ILabelProps extends ISpriteProps {
   text?: string;
@@ -16,17 +16,17 @@ export interface ILabelProps extends ISpriteProps {
   fontColor?: string;
   textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
   textAlign?: "left" | "right" | "center" | "start" | "end";
-};
+}
 
 const tempctx = document.createElement("canvas").getContext("2d");
 
 export class Label extends Sprite implements ILabel {
-  text: string = "";
-  font: string = "monospace";
-  fontSize: number = 12;
-  fontColor: string = "black";
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
-  textAlign: "left" | "right" | "center" | "start" | "end" = "start";
+  public text: string = "";
+  public font: string = "monospace";
+  public fontSize: number = 12;
+  public fontColor: string = "black";
+  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
+  public textAlign: "left" | "right" | "center" | "start" | "end" = "start";
 
   constructor(props: ILabelProps) {
     super(props);
@@ -37,12 +37,14 @@ export class Label extends Sprite implements ILabel {
     this.textBaseline = props.textBaseline || this.textBaseline;
     this.textAlign = props.textAlign || this.textAlign;
   }
-  update() {
+
+  public update(): void {
     this.height = this.fontSize;
     tempctx.font = `${this.fontSize}px ${this.font}`;
     this.width = tempctx.measureText(this.text).width;
   }
-  render(ctx: CanvasRenderingContext2D) {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
     ctx.textBaseline = this.textBaseline;
     ctx.textAlign = this.textAlign;
@@ -50,12 +52,9 @@ export class Label extends Sprite implements ILabel {
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);
   }
-};
-
-
+}
 
 export async function loadLabel(props: ILabelProps): Promise<ILabel> {
   const label = new Label(props);
-  
   return label;
-};
+}

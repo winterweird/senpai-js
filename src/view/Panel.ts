@@ -1,23 +1,21 @@
 import { ISprite, Sprite, ISpriteProps } from "./Sprite";
 import { loadImage, ITextureMap, ILoadProps, IInteractionPoint, createTextureMap } from "../util";
 import { transformPoint } from "../matrix";
+import assert from "assert";
 
 const sortZ = (a: ISprite, b: ISprite): number => a.z - b.z;
-
-const assert = require("assert");
 
 export interface IPanel extends ISprite {
   addSprite(sprite: ISprite): this;
   removeSprite(sprite: ISprite): this;
-  sprites: ISprite[];
-};
+}
 
 export interface IPanelProps extends ISpriteProps {
   sprites?: ISprite[];
-};
+}
 
 export class Panel extends Sprite implements IPanel {
-  sprites: ISprite[] = [];
+  private sprites: ISprite[] = [];
 
   constructor(props: IPanelProps) {
     super(props);
@@ -25,33 +23,36 @@ export class Panel extends Sprite implements IPanel {
 
     this.setTexture("Texture");
   }
-  addSprite(sprite: ISprite): this {
+
+  public addSprite(sprite: ISprite): this {
     sprite.parent = this;
     this.sprites.push(sprite);
     return this;
   }
-  interpolate(now: number) {
+
+  public interpolate(now: number) {
     if (now <= this.lastInterpolated) {
       return;
     }
     super.interpolate(now);
-    for (let i = 0; i < this.sprites.length; i++) {
-      this.sprites[i].interpolate(now);
+    for (const sprite of this.sprites) {
+      sprite.interpolate(now);
     }
   }
-  removeSprite(sprite: ISprite): this {
+
+  public removeSprite(sprite: ISprite): this {
     if (this.sprites.includes(sprite)) {
       this.sprites.splice(this.sprites.indexOf(sprite), 1);
       sprite.parent = null;
     }
+
     return this;
   }
-  broadPhase(point: IInteractionPoint): boolean {
-    let sprite: ISprite = null;
+
+  public broadPhase(point: IInteractionPoint): boolean {
     this.sprites.sort(sortZ);
 
-    for (let i = 0; i < this.sprites.length; i++) {
-      sprite = this.sprites[i];
+    for (const sprite of this.sprites) {
 
       sprite.down = false;
       sprite.clicked = false;
@@ -59,13 +60,14 @@ export class Panel extends Sprite implements IPanel {
     }
     return super.broadPhase(point);
   }
-  narrowPhase(point: IInteractionPoint): ISprite {
-    let sprite: ISprite = null,
-      collision: ISprite = null;
+  public narrowPhase(point: IInteractionPoint): ISprite {
+    let sprite: ISprite = null;
+    let collision: ISprite = null;
+
     for (let i = this.sprites.length - 1; i >= 0; i--) {
       sprite = this.sprites[i];
 
-      //the sprites inverse has already been calculated relative to the parent
+      // the sprites inverse has already been calculated relative to the parent
       transformPoint(point, sprite.inverse);
 
       if (!sprite.broadPhase(point)) {
@@ -79,28 +81,26 @@ export class Panel extends Sprite implements IPanel {
     }
     return this;
   }
-  update() {
-    let sprite: ISprite;
+  public update(): void {
     this.hover = false;
-    for (let i = 0; i < this.sprites.length; i++) {
-      sprite = this.sprites[i];
-
+    for (const sprite of this.sprites) {
       sprite.update();
+
       if (sprite.hover) {
         this.hover = sprite.hover;
         this.cursor = sprite.cursor;
       }
     }
   }
-  render(ctx: CanvasRenderingContext2D) {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     super.render(ctx);
-    let sprite: ISprite;
+
     ctx.beginPath();
     ctx.rect(0, 0, this.width, this.height);
     ctx.clip();
 
-    for(let i = 0; i < this.sprites.length; i++) {
-      sprite = this.sprites[i];
+    for (const sprite of this.sprites) {
       ctx.save();
       ctx.transform(
         sprite.interpolatedPosition[0],
@@ -115,17 +115,18 @@ export class Panel extends Sprite implements IPanel {
       ctx.restore();
     }
   }
-  skipAnimation(): void {
+
+  public skipAnimation(): void {
     super.skipAnimation();
-    for (let i = 0; i < this.sprites.length; i++) {
-      this.sprites[i].skipAnimation();
+    for (const sprite of this.sprites) {
+      sprite.skipAnimation();
     }
   }
-};
+}
 
 export interface ILoadPanelProps extends IPanelProps, ILoadProps {
 
-};
+}
 
 export async function loadPanel(props: ILoadPanelProps): Promise<IPanel> {
   const img = loadImage(props.src);
@@ -135,6 +136,6 @@ export async function loadPanel(props: ILoadPanelProps): Promise<IPanel> {
 
   props.textures = textures;
   const textbox = new Panel(props);
-  
+
   return textbox;
-};
+}

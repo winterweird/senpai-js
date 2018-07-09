@@ -1,20 +1,20 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
-
-
-const assert = require("assert");
+import assert from "assert";
 
 export interface IClose extends ISprite {
-};
+
+}
 
 export interface ICloseProps extends ISpriteProps {
-};
+
+}
 
 export class Close extends Sprite implements IClose {
   constructor(props: ICloseProps) {
     super(props);
   }
-  update() {
+  public update(): void {
     const active = this.active ? "Active" : "Inactive";
     const hover = this.hover ? "Hover" : "NoHover";
     this.setTexture(`${active}_${hover}`);
@@ -22,10 +22,10 @@ export class Close extends Sprite implements IClose {
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
   }
-};
+}
 
 export interface ILoadCloseProps extends ICloseProps, ILoadProps {
-  
+
 }
 
 export async function loadClose(props: ILoadCloseProps): Promise<IClose> {
@@ -40,6 +40,6 @@ export async function loadClose(props: ILoadCloseProps): Promise<IClose> {
 
   props.textures = textures;
   const button = new Close(props);
-  
+
   return button;
-};
+}

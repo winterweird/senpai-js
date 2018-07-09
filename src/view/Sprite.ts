@@ -3,42 +3,48 @@ import { easeLinear } from "../ease";
 import { EventEmitter } from "events";
 import * as m from "../matrix";
 import { IStage } from "./Stage";
-const assert = require("assert");
+import assert from "assert";
 
 export interface ISprite extends ISize {
   id: string;
   parent: IStage | ISprite;
 
-  previousPosition: Float64Array; //a, b, c, d, e, f, alpha, z
-  position: Float64Array; //a, b, c, d, e, f, alpha, z
-  inverse: Float64Array; //a, b, c, d, e, f
+  // position
+
+  previousPosition: Float64Array;
+  position: Float64Array;
+  inverse: Float64Array;
   alpha: number;
   interpolatedAlpha: number;
   previousAlpha: number;
   z: number;
 
-  //animation properties
+  // animation
+
   lastInterpolated: number;
-  interpolatedPosition: Float64Array; //a, b, c, d, e, f, alpha
+  interpolatedPosition: Float64Array;
   animationStart: number;
   animationLength: number;
 
-  ease(ratio: number): number;
-  
+  // stage properties
+
+  active: boolean;
+  hover: boolean;
+  clicked: boolean;
+  down: boolean;
   cursor: "pointer" | "default";
 
-  broadPhase(point: IInteractionPoint): boolean;
-  narrowPhase(point: IInteractionPoint): ISprite; //narrowPhase point collision detection
-  pointCollision(point: IInteractionPoint): boolean;
-  keyStateChange(key: IKeyState): void;
-  active: boolean; //controlled by the stage
-  hover: boolean; //controlled by the stage
-  clicked: boolean; //controlled by the stage
-  down: boolean; //controlled by the stage
   texture: ImageBitmap | HTMLCanvasElement | HTMLImageElement;
 
+  // this is set by the over function
+  ease(ratio: number): number;
+
+  broadPhase(point: IInteractionPoint): boolean;
+  narrowPhase(point: IInteractionPoint): ISprite;
+  pointCollision(point: IInteractionPoint): boolean;
+  keyStateChange(key: IKeyState): void;
   setTexture(texture: string): this;
-  over(timespan: number, ease: Function): this;
+  over(timespan: number, ease: (ratio: number) => number): this;
   move(position: number[] | Float64Array): this;
   setZ(z: number): this;
   setAlpha(alpha: number): this;
@@ -46,11 +52,14 @@ export interface ISprite extends ISize {
   skipAnimation(): void;
   update(): void;
   render(ctx: CanvasRenderingContext2D): void;
-
   emit(event: string, ...args: any[]): boolean;
-  on(event: string, callback: Function): this;
-  once(event: string, callback: Function): this;
-};
+
+  // @ts-ignore: callback should be a function, and it doesn't matter
+  on(event: string, callback: () => void): this;
+
+  // @ts-ignore: callback should be a function, and it doesn't matter
+  once(event: string, callback: () => void): this;
+}
 
 export interface ISpriteProps {
   id: string;
@@ -58,34 +67,34 @@ export interface ISpriteProps {
   textures?: ITextureMap;
   alpha?: number;
   z?: number;
-};
+}
 
 export class Sprite extends EventEmitter implements ISprite {
-  id: string = "";
-  position: Float64Array = new Float64Array(6);
-  previousPosition: Float64Array = new Float64Array(6);
-  interpolatedPosition: Float64Array = new Float64Array(6);
-  inverse: Float64Array = new Float64Array(6);
-  alpha: number = 1;
-  interpolatedAlpha: number = 1;
-  previousAlpha: number = 1;
-  z: number = 0;
-  parent: ISprite = null;
+  public id: string = "";
+  public position: Float64Array = new Float64Array(6);
+  public previousPosition: Float64Array = new Float64Array(6);
+  public interpolatedPosition: Float64Array = new Float64Array(6);
+  public inverse: Float64Array = new Float64Array(6);
+  public alpha: number = 1;
+  public interpolatedAlpha: number = 1;
+  public previousAlpha: number = 1;
+  public z: number = 0;
+  public parent: ISprite = null;
 
-  lastInterpolated: number = 0;
-  animationStart: number = 0;
-  ease = easeLinear;
-  cursor: ("pointer" | "default") = "default";
-  animationLength: number = 400;
-  active: boolean = false;
-  hover: boolean = false;
-  clicked: boolean = false;
-  down: boolean = false;
-  textures: ITextureMap = {};
-  texture: ImageBitmap | HTMLCanvasElement | HTMLImageElement = new Image();
-  //ISize
-  width: number = 0;
-  height: number = 0;
+  public lastInterpolated: number = 0;
+  public animationStart: number = 0;
+  public ease = easeLinear;
+  public cursor: ("pointer" | "default") = "default";
+  public animationLength: number = 400;
+  public active: boolean = false;
+  public hover: boolean = false;
+  public clicked: boolean = false;
+  public down: boolean = false;
+  public textures: ITextureMap = {};
+  public texture: ImageBitmap | HTMLCanvasElement | HTMLImageElement = new Image();
+
+  public width: number = 0;
+  public height: number = 0;
 
   constructor(props: ISpriteProps) {
     super();
@@ -96,23 +105,27 @@ export class Sprite extends EventEmitter implements ISprite {
     m.set(this.previousPosition, position);
     m.set(this.interpolatedPosition, position);
 
-    if (props.hasOwnProperty('alpha')) {
+    if (props.hasOwnProperty("alpha")) {
       this.previousAlpha = this.alpha = this.interpolatedAlpha = props.alpha;
     }
-    if (props.hasOwnProperty('z')) {
+    if (props.hasOwnProperty("z")) {
       this.z = props.z;
     }
   }
-  broadPhase(point: IInteractionPoint): boolean {
+
+  public broadPhase(point: IInteractionPoint): boolean {
     return point.tx >= 0 && point.tx <= this.width && point.ty >= 0 && point.ty <= this.height;
   }
-  narrowPhase(point: IInteractionPoint): ISprite {
+
+  public narrowPhase(point: IInteractionPoint): ISprite {
     return this;
   }
-  pointCollision(point: IInteractionPoint): boolean {
+
+  public pointCollision(point: IInteractionPoint): boolean {
     return true;
   }
-  move(position: number[] | Float64Array): this {
+
+  public move(position: number[] | Float64Array): this {
     this.previousPosition[0] = this.interpolatedPosition[0];
     this.previousPosition[1] = this.interpolatedPosition[1];
     this.previousPosition[2] = this.interpolatedPosition[2];
@@ -128,37 +141,43 @@ export class Sprite extends EventEmitter implements ISprite {
     this.position[5] = position[5];
     return this;
   }
-  setAlpha(alpha: number): this {
+
+  public setAlpha(alpha: number): this {
     this.previousAlpha = this.interpolatedAlpha;
     this.alpha = alpha;
     return this;
   }
-  setZ(z: number): this {
+
+  public setZ(z: number): this {
     this.z = z;
     return this;
   }
-  over(timespan: number, ease?: (ratio: number) => number): this {
+
+  public over(timespan: number, ease?: (ratio: number) => number): this {
     this.animationLength = timespan;
     this.animationStart = Date.now();
     this.ease = ease || this.ease;
     return this;
   }
-  keyStateChange(key: IKeyState): void {
 
+  public keyStateChange(key: IKeyState): void {
+    throw new Error("Not implemented.");
   }
-  skipAnimation(): void {
+
+  public skipAnimation(): void {
     this.animationLength = 0;
   }
-  update(): void {
-    
+
+  public update(): void {
+    // No op
   }
-  interpolate(now: number): void {
+  public interpolate(now: number): void {
     if (now <= this.lastInterpolated) {
       return;
     }
     this.lastInterpolated = now;
 
-    const progress = now - this.animationStart
+    const progress = now - this.animationStart;
     const ratio = (progress >= this.animationLength)
         ? 1
         : this.ease(progress / this.animationLength);
@@ -171,7 +190,6 @@ export class Sprite extends EventEmitter implements ISprite {
       this.interpolatedPosition[4] = this.position[4];
       this.interpolatedPosition[5] = this.position[5];
       this.interpolatedAlpha = this.alpha;
-      
     } else {
       for (let j = 0; j < 6; j++) {
         this.interpolatedPosition[j] = this.previousPosition[j]
@@ -184,13 +202,14 @@ export class Sprite extends EventEmitter implements ISprite {
 
     if (this.parent) {
       this.parent.interpolate(now);
-      m.chain()
+
+      m.IdentityMatrix
         .transform(this.parent.inverse)
         .transform(this.inverse)
         .set(this.inverse);
     }
   }
-  setTexture(texture: string): this {
+  public setTexture(texture: string): this {
     assert(this.textures[texture]);
 
     const oldTexture = this.texture;
@@ -204,18 +223,19 @@ export class Sprite extends EventEmitter implements ISprite {
 
     return this;
   }
-  render(ctx: CanvasRenderingContext2D): void {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     ctx.drawImage(this.texture, 0, 0);
   }
-};
+}
 
 export interface ILoadSpriteProps extends ISpriteProps, ILoadProps {
-  
-};
+
+}
 
 export async function loadSprite(props: ILoadSpriteProps) {
   const img = loadImage(props.src);
   const textures: ITextureMap = await createTextureMap(props.definition, img);
   props.textures = textures;
-  return new Sprite(props)
-};
+  return new Sprite(props);
+}

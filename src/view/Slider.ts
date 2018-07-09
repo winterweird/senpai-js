@@ -1,14 +1,13 @@
 import { Sprite, ISprite, ISpriteProps } from "./Sprite";
 import { IInteractionPoint, loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
-
-const assert = require("assert");
+import assert from "assert";
 
 export interface ISlider extends ISprite {
   value: number;
   max: number;
   min: number;
   width: number;
-};
+}
 
 export interface ISliderProps extends ISpriteProps {
   value?: number;
@@ -18,10 +17,11 @@ export interface ISliderProps extends ISpriteProps {
 }
 
 export class Slider extends Sprite implements ISlider {
-  value: number = 0;
-  max: number = 1;
-  min: number = 0;
-  width: number = 100;
+  public value: number = 0;
+  public max: number = 1;
+  public min: number = 0;
+  public width: number = 100;
+
   private sliderPattern: CanvasPattern = null;
   private pillTexture: ImageBitmap = null;
 
@@ -37,15 +37,18 @@ export class Slider extends Sprite implements ISlider {
     this.sliderPattern = document
       .createElement("canvas")
       .getContext("2d")
+      // @ts-ignore: Dom Spec Outdated. ImageBitmap is acceptable parameter for createPattern.
       .createPattern(props.textures.Line, "repeat-x");
   }
-  broadPhase(point: IInteractionPoint): boolean {
+
+  public broadPhase(point: IInteractionPoint): boolean {
     if (this.active) {
       return true;
     }
     return super.broadPhase(point);
   }
-  narrowPhase(point: IInteractionPoint): ISprite {
+
+  public narrowPhase(point: IInteractionPoint): ISprite {
     if (this.active) {
       return this;
     }
@@ -53,21 +56,24 @@ export class Slider extends Sprite implements ISlider {
     const sliderValuePercent = (this.value - this.min) / (this.max - this.min);
     const valueX = sliderDistance * sliderValuePercent;
 
-    if(point.ty <= this.textures.Pill_Hover.height
-      && point.ty >= 0
-      && point.tx >= valueX
-      && point.tx <= valueX + this.textures.Pill_Hover.width) {
+    if (point.ty <= this.textures.Pill_Hover.height
+        && point.ty >= 0
+        && point.tx >= valueX
+        && point.tx <= valueX + this.textures.Pill_Hover.width) {
         return this;
       }
   }
-  pointCollision(point: IInteractionPoint): boolean {
+
+  public pointCollision(point: IInteractionPoint): boolean {
     super.pointCollision(point);
+
     if (this.active && point.active === this) {
       const previousValue = this.value;
       const sliderDistance = this.width - this.textures.Pill_Hover.width;
       const trueTX = point.tx - this.textures.Pill_Hover.width * 0.5;
       const clampedTX = Math.max(0, Math.min(trueTX, sliderDistance));
       const range = this.max - this.min;
+
       this.value = this.min + range * clampedTX / sliderDistance;
       if (this.value !== previousValue) {
         super.emit("value-change", this);
@@ -76,13 +82,15 @@ export class Slider extends Sprite implements ISlider {
 
     return true;
   }
-  update(): void {
+
+  public update(): void {
     this.cursor = this.hover ? "pointer" : "default";
     this.pillTexture = this.active
       ? this.textures.Pill_Active
       : (this.hover ? this.textures.Pill_Hover : this.textures.Pill);
   }
-  render(ctx: CanvasRenderingContext2D): void {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     ctx.drawImage(this.textures.Line_Cap_Left, 0, 0);
     ctx.drawImage(
       this.textures.Line_Cap_Right,
@@ -123,4 +131,4 @@ export async function loadSlider(props: ILoadSliderProps): Promise<ISlider> {
 
   const slider = new Slider(props);
   return slider;
-};
+}

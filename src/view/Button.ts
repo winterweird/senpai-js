@@ -1,7 +1,7 @@
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 
-const assert = require("assert");
+import assert from "assert";
 
 export interface IButton extends ISprite {
   selected: boolean;
@@ -9,7 +9,7 @@ export interface IButton extends ISprite {
   fontColor: string;
   fontSize: number;
   text: string;
-};
+}
 
 export interface IButtonProps extends ISpriteProps {
   selected?: boolean;
@@ -17,14 +17,14 @@ export interface IButtonProps extends ISpriteProps {
   fontColor?: string;
   fontSize?: number;
   text?: string;
-};
+}
 
 export class Button extends Sprite implements IButton {
-  selected: boolean = false;
-  font: string = "monospace";
-  fontColor: string = "black";
-  fontSize: number = 12;
-  text: string =  "";
+  public selected: boolean = false;
+  public font: string = "monospace";
+  public fontColor: string = "black";
+  public fontSize: number = 12;
+  public text: string =  "";
 
   constructor(props: IButtonProps) {
     super(props);
@@ -34,7 +34,8 @@ export class Button extends Sprite implements IButton {
     this.fontSize = props.fontSize || this.fontSize;
     this.text = props.text || this.text;
   }
-  update() {
+
+  public update(): void {
     const active = this.active ? "Active" : "Inactive";
     const hover = this.hover ? "Hover" : "NoHover";
     const selected = this.selected ? "Selected" : "Unselected";
@@ -43,7 +44,8 @@ export class Button extends Sprite implements IButton {
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
   }
-  render(ctx: CanvasRenderingContext2D) {
+
+  public render(ctx: CanvasRenderingContext2D): void {
     super.render(ctx);
     ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
     ctx.textBaseline = "middle";
@@ -52,11 +54,11 @@ export class Button extends Sprite implements IButton {
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);
   }
-};
+}
 
 export interface ILoadButtonProps extends IButtonProps, ILoadProps {
 
-};
+}
 
 export async function loadButton(props: ILoadButtonProps): Promise<IButton> {
   const img = loadImage(props.src);
@@ -72,6 +74,6 @@ export async function loadButton(props: ILoadButtonProps): Promise<IButton> {
 
   props.textures = textures;
   const button = new Button(props);
-  
+
   return button;
-};
+}

@@ -1,116 +1,160 @@
 import { EventEmitter } from "events";
 
+export interface ISoundSpriteSheet {
+  resources: string[];
+  spritemap: {
+    [name: string]: {
+      start: number;
+      end: number;
+      loop: boolean;
+    };
+  };
+}
 
 export interface ISoundSprite {
   id: string;
   source: AudioNode;
-  gain: GainNode;
+  volume: GainNode;
+  destination: AudioNode;
+  definition: ISoundSpriteSheet;
 
+  sound: string;
   playing: boolean;
-  loaded: boolean;
-  loop: boolean;
-  start: number;
-  end: number;
-  load(buffer: ArrayBuffer) : Promise<void>;
+  paused: boolean;
+
+  play(): void;
+  pause(): void;
+  stop(): void;
 }
 
 export interface ISoundSpriteProps {
   id: string;
-  buffer: ArrayBuffer;
-  loop: boolean;
-  start?: number;
-  end?: number;
+  source: AudioBufferSourceNode;
+  volume: GainNode;
+  destination: AudioNode;
+  definition: ISoundSpriteSheet;
+  gain?: number;
 }
 
-const tempContext = new AudioContext;
+export interface IAudioEventDefinition {
+  type: string;
+  event: (event: Event) => void;
+}
 
 export class SoundSprite extends EventEmitter implements ISoundSprite {
-  id: string = "";
+  public id: string = "";
+  public source: AudioBufferSourceNode = null;
+  public volume: GainNode = null;
+  public destination: AudioNode;
+  public definition: ISoundSpriteSheet;
+  public sound: string = "";
+  public playing: boolean = false;
+  public paused: boolean = false;
 
-  //data props
-  buffer: ArrayBuffer = null;
-  audioBuffer: AudioBuffer = null;
-  source: AudioBufferSourceNode = tempContext.createBufferSource();
-  gain: GainNode = tempContext.createGain();
+  private started: number = 0;
+  private startAt: number = 0;
 
-  playing: boolean = false;
-  paused: boolean = false;
-  duration: number = 0;
-  loaded: boolean = false;
-  loop: boolean = false;
-  start: number = 0;
-  end: number = 0;
-  startedAt: number = 0;
+  private events: IAudioEventDefinition[] = [
+    { type: "ended", event: (event: Event) => this.onEnded(event) },
+  ];
 
-  constructor(props: ISoundSpriteProps) {
+  public constructor(props: ISoundSpriteProps) {
     super();
     this.id = props.id;
-    this.loop = props.loop;
-    this.start = props.start;
-    this.end = props.end;
-    if (props.buffer) {
-      this.load(props.buffer);
-    }
+    this.source = props.source;
+    this.volume = props.volume;
+    this.destination = props.destination;
+    this.definition = props.definition;
+    this.volume.gain.value = props.hasOwnProperty("gain") ? props.gain : 1;
+    this.setup();
   }
-  async load(buffer: ArrayBuffer): Promise<void> {
-    this.buffer = buffer;
-    if (this.source)
-    {
-      this.source.disconnect(this.gain);
-    }
-    const audioBuffer = await tempContext.decodeAudioData(buffer);
-    this.audioBuffer = audioBuffer;
-    this.source.buffer = audioBuffer;
-    this.end = this.end === 0 ? audioBuffer.duration : this.end;
-    this.duration = this.end - this.start;
-    this.loaded = true;
-    this.source.connect(this.gain);
-    if (this.loop) {
-      this.source.loopStart = this.start;
-      this.source.loopEnd = this.end;
-    }
-    super.emit("audio-loaded", this);
-  }
-  play() {
-    if (this.loaded) {
-      let start: number = 0;
 
-      if (this.paused) {
-        this.paused = false;
-        this.startedAt = Date.now() - this.duration;
-        start  = this.start + this.duration;
-      } else {
-        this.startedAt = Date.now();
-        start = this.start;
-      }
+  public play(): void {
+    const sound = this.definition.spritemap[this.sound];
 
+    if (!this.playing) {
+      this.source.loop = sound.loop;
+      this.source.start(0, sound.start, sound.end);
+      this.started = Date.now();
       this.playing = true;
-      if (this.loop) {
-        this.source.start(start);
-      } else {
-        this.source.start(start, this.end - start);
+
+      if (sound.loop) {
+        this.source.loopStart = sound.start;
+        this.source.loopEnd = sound.end;
       }
+
       super.emit("audio-playing", this);
-    } else {
-      super.once("audio-loaded", e => this.play());
+      return;
+    }
+
+    if (this.paused) {
+      this.source.start(0, sound.start + this.startAt, sound.end);
+      this.paused = false;
+      super.emit("audio-playing", this);
+      return;
     }
   }
-  pause() {
-    if (this.playing) {
+
+  public pause(): void {
+    if (this.playing && !this.paused) {
+      const sound = this.definition.spritemap[this.sound];
+      this.startAt = (Date.now() - this.started) % (sound.end - sound.start);
       this.paused = true;
-      this.playing = false;
-      this.duration = Date.now() - this.startedAt;
-      this.source.stop();
+      this.source.stop(0);
+
       super.emit("audio-paused", this);
     }
   }
-  stop() {
+
+  public stop(): void {
     if (this.playing) {
+      this.source.stop(0);
       this.paused = false;
       this.playing = false;
-      this.duration = 0;
-      this.source.stop();
+      this.startAt = 0;
+      this.source.loop = false;
+      this.source.loopStart = 0;
+      this.source.loopEnd = 0;
+
       super.emit("audio-stopped", this);
+      return;
     }
   }
+
+  public dispose() {
+    this.source.disconnect(this.volume);
+    this.volume.disconnect(this.destination);
+    this.events.forEach(e => this.source.removeEventListener(e.type, e.event));
+  }
+
+  private onEnded(event: Event): void {
+    this.stop();
+  }
+
+  private setup(): void {
+    this.source.connect(this.volume);
+    this.volume.connect(this.destination);
+    this.events.forEach(e => this.source.addEventListener(e.type, e.event));
+  }
+}
+
+export interface ILoadSoundSpriteProps {
+  id: string;
+  buffer: ArrayBuffer;
+  context: AudioContext;
+  definition: ISoundSpriteSheet;
+}
+
+export async function loadSoundSprite(props: ILoadSoundSpriteProps): Promise<ISoundSprite> {
+  const buffer = await props.context.decodeAudioData(props.buffer);
+  const source = props.context.createBufferSource();
+  source.buffer = buffer;
+  const sprite = new SoundSprite({
+    definition: props.definition,
+    destination: props.context.destination,
+    id: props.id,
+    source,
+    volume: props.context.createGain(),
+  });
+  return sprite;
 }
