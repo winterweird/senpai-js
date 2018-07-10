@@ -1,41 +1,42 @@
-import {  IStage, IStageProps, Stage } from "../view/Stage";
-import { loadCharacter } from "../view/Character";
-import { ISpriteSheet, IInteractionPoint } from "../util";
-import { IPanel, loadPanel } from "../view/Panel";
-import { ISprite, loadSprite } from "../view/Sprite";
-import { loadCheckbox, ICheckbox } from "../view/Checkbox";
-import { IWorkerEvent } from "../events/IWorkerEvent";
+import * as easeFuncs from "../ease";
 import { IBatchEvent } from "../events/IBatchEvent";
 import { IButtonSelectedEvent } from "../events/IButtonSelected";
-import { IButton, loadButton } from "../view/Button";
 import { ICheckboxCheckedEvent } from "../events/ICheckboxCheckedEvent";
 import { ICreateButtonEvent } from "../events/ICreateButtonEvent";
-import { loadTextbox, ITextbox } from "../view/Textbox";
 import { ICreateCharacterEvent } from "../events/ICreateCharacterEvent";
 import { ICreateCheckboxEvent } from "../events/ICreateCheckboxEvent";
 import { ICreateCloseEvent } from "../events/ICreateCloseEvent";
-import { loadClose } from "../view/Close";
 import { ICreateLabelEvent } from "../events/ICreateLabelEvent";
-import { loadLabel, ILabel } from "../view/Label";
 import { ICreatePanelEvent } from "../events/ICreatePanelEvent";
-import { ICreateSliderEvent } from "../events/ICreateSlider";
-import { loadSlider } from "../view/Slider";
+import { ICreateSliderEvent } from "../events/ICreateSliderEvent";
+import { ICreateSoundSpriteEvent } from "../events/ICreateSoundSpriteEvent";
 import { ICreateSpriteEvent } from "../events/ICreateSpriteEvent";
 import { ICreateTextboxEvent } from "../events/ICreateTextbox";
+import { ILoadFontsEvent } from "../events/ILoadFontsEvent";
+import { IPauseSoundEvent } from "../events/IPauseSoundEvent";
+import { IPlaySoundEvent } from "../events/IPlaySoundEvent";
+import { ISkipAnimationEvent } from "../events/ISkipAnimationEvent";
+import { ISliderValueChangeEvent } from "../events/ISliderValueChangeEvent";
 import { ISpriteMoveEvent } from "../events/ISpriteMoveEvent";
-import { ISpriteRemoveEvent } from "../events/ISpriteRemove";
+import { ISpriteRemoveEvent } from "../events/ISpriteRemoveEvent";
+import { IStopSoundEvent } from "../events/IStopSoundEvent";
 import { ITextboxAppendEvent } from "../events/ITextboxAppendEvent";
 import { ITextChangeEvent } from "../events/ITextChangeEvent";
 import { ITextureChangeEvent } from "../events/ITextureChangeEvent";
-import * as easeFuncs from "../ease";
-import { ISkipAnimationEvent } from "../events/ISkipAnimationEvent";
-import { ICreateSoundSpriteEvent } from "../events/ICreateSoundSpriteEvent";
-import { IPlaySoundEvent } from "../events/IPlaySoundEvent";
-import { IPauseSoundEvent } from "../events/IPauseSoundEvent";
-import { IStopSoundEvent } from "../events/IStopSoundEvent";
-import { ISoundSprite, loadSoundSprite, ISoundSpriteSheet } from "../view/SoundSprite";
-import { ILoadFontsEvent } from "../events/ILoadFontsEvent";
+import { IWorkerEvent } from "../events/IWorkerEvent";
+import { IInteractionPoint, ISpriteSheet } from "../util";
+import { IButton, loadButton } from "../view/Button";
+import { loadCharacter } from "../view/Character";
+import { ICheckbox, loadCheckbox } from "../view/Checkbox";
+import { loadClose } from "../view/Close";
 import { loadFonts } from "../view/fonts";
+import { ILabel, loadLabel } from "../view/Label";
+import { IPanel, loadPanel } from "../view/Panel";
+import { ISlider, loadSlider } from "../view/Slider";
+import { ISoundSprite, ISoundSpriteSheet, loadSoundSprite } from "../view/SoundSprite";
+import { ISprite, loadSprite } from "../view/Sprite";
+import { IStage, IStageProps, Stage } from "../view/Stage";
+import { ITextbox, loadTextbox } from "../view/Textbox";
 
 export interface ISpriteSheetMap {
   [name: string]: { index: ISpriteSheet };
@@ -79,6 +80,7 @@ export class StageManager extends Stage implements IStageManager {
   private static flacs: ISoundSourceMap = require("../../assets/sound/*.flac");
   private static wavs: ISoundSourceMap = require("../../assets/sound/*.wav");
   private static SoundDefinitions: ISoundSpriteSheetIndex = require("../../assets/sound/*.json");
+  private handling: Promise<void> = Promise.resolve();
 
   private index: ISpriteIndex = {};
   private soundIndex: ISoundSpriteIndex = {};
@@ -87,7 +89,17 @@ export class StageManager extends Stage implements IStageManager {
     super(props);
   }
 
-  public async handle(event: IWorkerEvent): Promise<void> {
+  public handle(event: IWorkerEvent): Promise<void> {
+    return this.handling = this.handling
+      .then(
+        () => this.handleEvent(event),
+      )
+      .catch(
+        (error) => console.error(error),
+      );
+  }
+
+  private async handleEvent(event: IWorkerEvent): Promise<void> {
     if (event.type === "batch") {
       await this.handleBatch(event as IBatchEvent);
       return;
@@ -202,11 +214,18 @@ export class StageManager extends Stage implements IStageManager {
       await this.handleLoadFonts(event as ILoadFontsEvent);
       return;
     }
+
+    if (event.type === "slider-value-change") {
+      await this.handleSliderValueChange(event as ISliderValueChangeEvent);
+      return;
+    }
+
+    throw new Error(`Event unhandled: ${event.type}.`);
   }
 
   private async handleBatch(event: IBatchEvent): Promise<void> {
     for (const child of event.props.events) {
-      await this.handle(child);
+      await this.handleEvent(child);
     }
   }
 
@@ -331,6 +350,8 @@ export class StageManager extends Stage implements IStageManager {
     t.font = event.props.font;
     t.fontColor = event.props.fontColor;
     t.fontSize = event.props.fontSize;
+    t.textAlign = event.props.textAlign;
+    t.textBaseline = event.props.textBaseline;
   }
 
   private async handleTextureChange(event: ITextureChangeEvent): Promise<void> {
@@ -376,6 +397,15 @@ export class StageManager extends Stage implements IStageManager {
     if (s.playing) {
       s.stop();
     }
+  }
+
+  private async handleSliderValueChange(event: ISliderValueChangeEvent): Promise<void> {
+    const s: ISlider = this.index[event.props.id] as ISlider;
+
+    s.width = event.props.width;
+    s.max = event.props.max;
+    s.min = event.props.min;
+    s.value = event.props.value;
   }
 
   private async handleLoadFonts(event: ILoadFontsEvent): Promise<void> {

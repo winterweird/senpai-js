@@ -1,6 +1,6 @@
-import { IWorkerEvent } from "./IWorkerEvent";
-import { ILoadCharacterProps } from "../view/Character";
 import { IHasParent } from "../util";
+import { ILoadCharacterProps } from "../view/Character";
+import { IWorkerEvent } from "./IWorkerEvent";
 
 export interface ICreateCharacterEvent extends IWorkerEvent {
   type: "create-character";

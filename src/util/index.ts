@@ -140,3 +140,12 @@ export async function createTextureMap(definition: ISpriteSheet, img: Promise<Im
 export interface IHasParent {
   parent: string;
 }
+
+export function compareProps<T>(a: T, b: T, props: string[]): boolean {
+  for (const prop of props) {
+    if (a[prop] !== b[prop]) {
+      return true;
+    }
+  }
+  return false;
+}

@@ -8,5 +8,7 @@ export interface ITextChangeEvent extends IWorkerEvent {
     fontSize: number;
     fontColor: string;
     text: string;
+    textAlign: "left" | "right" | "center" | "start" | "end";
+    textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
   };
 }

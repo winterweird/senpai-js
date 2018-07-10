@@ -243,23 +243,20 @@ export function transformPoints(
   }
 }
 
-export function transformPoint(
-  point: IInteractionPoint,
-  matrix: Float64Array | number[],
-): void {
+export function transformPoint(point: IInteractionPoint, matrix: Float64Array | number[]): void {
   point.tx = matrix[0] * point.x + matrix[2] * point.y + matrix[4];
   point.ty = matrix[1] * point.x + matrix[3] * point.y + matrix[5];
 }
 
-export function set(
-  target: Float64Array | number[],
-  source: Float64Array | number[],
-): void {
+export function set(target: Float64Array | number[], source: Float64Array | number[]): void {
   for (let i = 0; i < target.length && i < source.length; i++) {
     target[i] = source[i];
   }
 }
 
-export function chain(value: Float64Array | number[] = Identity, immutable: boolean = false ): IMatrix {
+export function chain(
+  value: Float64Array | number[] = Identity,
+  immutable: boolean = false,
+): IMatrix {
   return new Matrix(value, immutable);
 }

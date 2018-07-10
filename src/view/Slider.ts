@@ -1,6 +1,6 @@
-import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { IInteractionPoint, loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 import assert from "assert";
+import { createTextureMap, IInteractionPoint, ILoadProps, ITextureMap, loadImage } from "../util";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface ISlider extends ISprite {
   value: number;

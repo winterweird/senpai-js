@@ -1,6 +1,6 @@
-import { Sprite, ISprite, ISpriteProps } from "./Sprite";
-import { ITextureMap, IInteractionPoint, loadImage, ILoadProps, createTextureMap } from "../util";
 import assert from "assert";
+import { createTextureMap, IInteractionPoint, ILoadProps, ITextureMap, loadImage } from "../util";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface ICheckbox extends ISprite {
   checked: boolean;
@@ -8,6 +8,8 @@ export interface ICheckbox extends ISprite {
   font: string;
   fontColor: string;
   fontSize: number;
+  textAlign: "left" | "right" | "center" | "start" | "end";
+  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 
   toggle(): this;
 }
@@ -18,6 +20,8 @@ export interface ICheckboxProps extends ISpriteProps {
   font?: string;
   fontColor?: string;
   fontSize?: number;
+  textAlign?: "left" | "right" | "center" | "start" | "end";
+  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 }
 
 export class Checkbox extends Sprite implements ICheckbox {
@@ -26,6 +30,8 @@ export class Checkbox extends Sprite implements ICheckbox {
   public font: string = "monospace";
   public fontColor: string = "black";
   public fontSize: number = 12;
+  public textAlign: "left" | "right" | "center" | "start" | "end" = "left";
+  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "middle";
 
   constructor(props: ICheckboxProps) {
     super(props);
@@ -33,6 +39,8 @@ export class Checkbox extends Sprite implements ICheckbox {
     this.text = props.text || this.text;
     this.font = props.font || this.font;
     this.fontColor = props.fontColor || this.fontColor;
+    this.textAlign = props.textAlign || this.textAlign;
+    this.textBaseline = props.textBaseline || this.textBaseline;
   }
 
   public toggle(): this {
@@ -51,7 +59,8 @@ export class Checkbox extends Sprite implements ICheckbox {
   public render(ctx: CanvasRenderingContext2D): void {
     super.render(ctx);
     ctx.translate(this.width * 1.1, this.height / 2);
-    ctx.textBaseline = "middle";
+    ctx.textAlign = this.textAlign;
+    ctx.textBaseline = this.textBaseline;
     ctx.fillStyle = this.fontColor;
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillText(this.text, 0, 0);

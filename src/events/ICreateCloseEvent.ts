@@ -1,6 +1,6 @@
-import { IWorkerEvent } from "./IWorkerEvent";
-import { ILoadCloseProps } from "../view/Close";
 import { IHasParent } from "../util";
+import { ILoadCloseProps } from "../view/Close";
+import { IWorkerEvent } from "./IWorkerEvent";
 
 export interface ICreateCloseEvent extends IWorkerEvent {
   type: "create-close";

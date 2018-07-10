@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
-import { ISize, IInteractionPoint } from "../util";
-import { ISprite } from "./Sprite";
 import { transformPoint } from "../matrix";
+import { IInteractionPoint, ISize } from "../util";
+import { ISprite } from "./Sprite";
 
 export interface ITouchIndex {
   [id: string]: IInteractionPoint;

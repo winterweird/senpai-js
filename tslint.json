@@ -2,7 +2,6 @@
   "extends": "tslint:recommended",
   "rulesDirectory": [],
   "rules": {
-    "ordered-imports": false,
     "no-console": false,
     "no-trailing-whitespace": true,
     "no-empty-interface": false,

@@ -1,7 +1,7 @@
-import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { IPadding, ILoadProps, loadImage, ITextureMap, createTextureMap } from "../util";
-import splitToWords from "split-to-words";
 import assert from "assert";
+import splitToWords from "split-to-words";
+import { createTextureMap, ILoadProps, IPadding, ITextureMap, loadImage } from "../util";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 const tempctx = document.createElement("canvas").getContext("2d");
 
@@ -14,6 +14,8 @@ export interface ITextbox extends ISprite {
   font: string;
   fontColor: string;
   lineHeight: number;
+  textAlign: "left" | "right" | "center" | "start" | "end";
+  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 
   setText(text: string): this;
   appendText(text: string): this;
@@ -23,6 +25,8 @@ export interface ITextboxProps extends ISpriteProps {
   text?: string;
   textSpeed?: number;
   textIndex?: number;
+  textAlign?: "left" | "right" | "center" | "start" | "end";
+  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
   padding?: IPadding;
   fontSize?: number;
   font?: string;
@@ -44,7 +48,8 @@ export class Textbox extends Sprite implements ITextbox {
   public font: string = "monospace";
   public fontColor: string = "black";
   public lineHeight: number = 16;
-
+  public textAlign: "left" | "right" | "center" | "start" | "end" = "left";
+  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
   private interpolatedText: string[] = [""];
 
   constructor(props: ITextboxProps) {
@@ -91,8 +96,8 @@ export class Textbox extends Sprite implements ITextbox {
 
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
-    ctx.textBaseline = "hanging";
-    ctx.textAlign = "left";
+    ctx.textAlign = this.textAlign;
+    ctx.textBaseline = this.textBaseline;
 
     for (const line of this.interpolatedText) {
       if (height + this.fontSize > maxHeight) {

@@ -1,7 +1,7 @@
 /****
  * Custom ease functions, designed with functional programming concepts.
  */
-import { TAU, PI } from "./consts";
+import { PI, TAU } from "./consts";
 
 function inverse(inFunc: (ratio: number) => number): (ratio: number) => number {
   return function outFunc(ratio: number): number {

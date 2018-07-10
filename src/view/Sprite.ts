@@ -1,9 +1,9 @@
-import { IInteractionPoint, IKeyState, ISize, ITextureMap, ILoadProps, loadImage, createTextureMap } from "../util";
-import * as eases from "../ease";
-import { EventEmitter } from "events";
-import * as m from "../matrix";
-import { IStage } from "./Stage";
 import assert from "assert";
+import { EventEmitter } from "events";
+import * as eases from "../ease";
+import * as m from "../matrix";
+import { createTextureMap, IInteractionPoint, IKeyState, ILoadProps, ISize, ITextureMap, loadImage } from "../util";
+import { IStage } from "./Stage";
 
 export interface ISprite extends ISize {
   id: string;
@@ -181,10 +181,11 @@ export class Sprite extends EventEmitter implements ISprite {
     }
     this.lastInterpolated = now;
 
-    const progress = now - this.animationStart;
+    const progress = now - (this.animationStart + this.wait);
+
     const ratio = (progress >= this.animationLength)
         ? 1
-        : this.ease(progress / this.animationLength);
+        : (progress <= 0 ? 0 : this.ease(progress / this.animationLength));
 
     if (ratio === 1) {
       this.interpolatedPosition[0] = this.position[0];
@@ -194,6 +195,14 @@ export class Sprite extends EventEmitter implements ISprite {
       this.interpolatedPosition[4] = this.position[4];
       this.interpolatedPosition[5] = this.position[5];
       this.interpolatedAlpha = this.alpha;
+    } else if (ratio === 0) {
+      this.interpolatedPosition[0] = this.previousPosition[0];
+      this.interpolatedPosition[1] = this.previousPosition[1];
+      this.interpolatedPosition[2] = this.previousPosition[2];
+      this.interpolatedPosition[3] = this.previousPosition[3];
+      this.interpolatedPosition[4] = this.previousPosition[4];
+      this.interpolatedPosition[5] = this.previousPosition[5];
+      this.interpolatedAlpha = this.previousAlpha;
     } else {
       for (let j = 0; j < 6; j++) {
         this.interpolatedPosition[j] = this.previousPosition[j]
@@ -207,8 +216,7 @@ export class Sprite extends EventEmitter implements ISprite {
     if (this.parent) {
       this.parent.interpolate(now);
 
-      m.IdentityMatrix
-        .transform(this.parent.inverse)
+      m.chain(this.parent.inverse, true)
         .transform(this.inverse)
         .set(this.inverse);
     }

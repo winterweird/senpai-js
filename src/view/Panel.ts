@@ -1,7 +1,7 @@
-import { ISprite, Sprite, ISpriteProps } from "./Sprite";
-import { loadImage, ITextureMap, ILoadProps, IInteractionPoint, createTextureMap } from "../util";
-import { transformPoint } from "../matrix";
 import assert from "assert";
+import { transformPoint } from "../matrix";
+import { createTextureMap, IInteractionPoint, ILoadProps, ITextureMap, loadImage } from "../util";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 const sortZ = (a: ISprite, b: ISprite): number => a.z - b.z;
 

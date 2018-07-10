@@ -1,6 +1,6 @@
-import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 import assert from "assert";
+import { createTextureMap, ILoadProps, ITextureMap, loadImage } from "../util";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface IClose extends ISprite {
 

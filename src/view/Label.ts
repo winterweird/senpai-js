@@ -1,4 +1,4 @@
-import { Sprite, ISprite, ISpriteProps } from "./Sprite";
+import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface ILabel extends ISprite {
   text: string;

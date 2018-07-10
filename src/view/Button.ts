@@ -1,5 +1,5 @@
+import { createTextureMap, ILoadProps, ITextureMap, loadImage } from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
-import { loadImage, ITextureMap, ILoadProps, createTextureMap } from "../util";
 
 import assert from "assert";
 
@@ -9,6 +9,8 @@ export interface IButton extends ISprite {
   fontColor: string;
   fontSize: number;
   text: string;
+  textAlign: "left" | "right" | "center" | "start" | "end";
+  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 }
 
 export interface IButtonProps extends ISpriteProps {
@@ -17,6 +19,8 @@ export interface IButtonProps extends ISpriteProps {
   fontColor?: string;
   fontSize?: number;
   text?: string;
+  textAlign?: "left" | "right" | "center" | "start" | "end";
+  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 }
 
 export class Button extends Sprite implements IButton {
@@ -25,6 +29,8 @@ export class Button extends Sprite implements IButton {
   public fontColor: string = "black";
   public fontSize: number = 12;
   public text: string =  "";
+  public textAlign: "left" | "right" | "center" | "start" | "end" = "center";
+  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "middle";
 
   constructor(props: IButtonProps) {
     super(props);
@@ -33,6 +39,8 @@ export class Button extends Sprite implements IButton {
     this.fontColor = props.fontColor || this.fontColor;
     this.fontSize = props.fontSize || this.fontSize;
     this.text = props.text || this.text;
+    this.textAlign = props.textAlign;
+    this.textBaseline = props.textBaseline;
   }
 
   public update(): void {

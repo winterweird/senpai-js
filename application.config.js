@@ -6,5 +6,5 @@ module.exports = {
   ui: {
     font: "Puritain-Bold",
     fontColor: "#44AA00",
-  }
+  },
 };
