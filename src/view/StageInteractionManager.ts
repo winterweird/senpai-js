@@ -67,7 +67,7 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
     if (this.canvas.parentElement) {
       this.canvas.parentElement.removeChild(this.canvas);
     }
-    this.events.forEach(event => event[0].removeEventListener(event[1], event[2]));
+    this.events.forEach(event => event.target.removeEventListener(event.event, event.listener));
   }
 
   protected cleanUp(): void {
@@ -86,7 +86,7 @@ export class StageInteractionManager extends EventEmitter implements IStageInter
   }
 
   private hookEvents(): void {
-    this.events.forEach(event => event[0].addEventListener(event[1], event[2]));
+    this.events.forEach(event => event.target.addEventListener(event.event, event.listener));
   }
 
   private touchStart(e: TouchEvent): void {

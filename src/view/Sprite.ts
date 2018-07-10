@@ -1,5 +1,5 @@
 import { IInteractionPoint, IKeyState, ISize, ITextureMap, ILoadProps, loadImage, createTextureMap } from "../util";
-import { easeLinear } from "../ease";
+import * as eases from "../ease";
 import { EventEmitter } from "events";
 import * as m from "../matrix";
 import { IStage } from "./Stage";
@@ -25,7 +25,7 @@ export interface ISprite extends ISize {
   interpolatedPosition: Float64Array;
   animationStart: number;
   animationLength: number;
-
+  wait: number;
   // stage properties
 
   active: boolean;
@@ -44,7 +44,7 @@ export interface ISprite extends ISize {
   pointCollision(point: IInteractionPoint): boolean;
   keyStateChange(key: IKeyState): void;
   setTexture(texture: string): this;
-  over(timespan: number, ease: (ratio: number) => number): this;
+  over(timespan: number, wait: number, ease: (ratio: number) => number): this;
   move(position: number[] | Float64Array): this;
   setZ(z: number): this;
   setAlpha(alpha: number): this;
@@ -82,10 +82,11 @@ export class Sprite extends EventEmitter implements ISprite {
   public previousAlpha: number = 1;
   public z: number = 0;
   public parent: ISprite = null;
+  public wait: number = 0;
 
   public lastInterpolated: number = 0;
   public animationStart: number = 0;
-  public ease = easeLinear;
+  public ease = eases.easeLinear;
   public cursor: ("pointer" | "default") = "default";
   public animationLength: number = 400;
   public active: boolean = false;
@@ -155,10 +156,11 @@ export class Sprite extends EventEmitter implements ISprite {
     return this;
   }
 
-  public over(timespan: number, ease?: (ratio: number) => number): this {
+  public over(timespan: number, wait: number = 0, ease: (ratio: number) => number = this.ease): this {
     this.animationLength = timespan;
     this.animationStart = Date.now();
     this.ease = ease || this.ease;
+    this.wait = wait;
     return this;
   }
 

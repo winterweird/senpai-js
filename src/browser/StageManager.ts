@@ -34,6 +34,8 @@ import { IPlaySoundEvent } from "../events/IPlaySoundEvent";
 import { IPauseSoundEvent } from "../events/IPauseSoundEvent";
 import { IStopSoundEvent } from "../events/IStopSoundEvent";
 import { ISoundSprite, loadSoundSprite, ISoundSpriteSheet } from "../view/SoundSprite";
+import { ILoadFontsEvent } from "../events/ILoadFontsEvent";
+import { loadFonts } from "../view/fonts";
 
 export interface ISpriteSheetMap {
   [name: string]: { index: ISpriteSheet };
@@ -195,6 +197,11 @@ export class StageManager extends Stage implements IStageManager {
       await this.handleStopSound(event as IStopSoundEvent);
       return;
     }
+
+    if (event.type === "load-fonts") {
+      await this.handleLoadFonts(event as ILoadFontsEvent);
+      return;
+    }
   }
 
   private async handleBatch(event: IBatchEvent): Promise<void> {
@@ -295,7 +302,7 @@ export class StageManager extends Stage implements IStageManager {
 
     sprite
       .move(props.position)
-      .over(props.timespan, easeFuncs[props.ease] as (ratio: number) => number)
+      .over(props.timespan, props.wait, easeFuncs[props.ease] as (ratio: number) => number)
       .setAlpha(props.alpha)
       .setZ(props.z);
   }
@@ -369,6 +376,10 @@ export class StageManager extends Stage implements IStageManager {
     if (s.playing) {
       s.stop();
     }
+  }
+
+  private async handleLoadFonts(event: ILoadFontsEvent): Promise<void> {
+    await loadFonts(require("../../assets/fonts/*.*"));
   }
 
   private indexAndAdd(child: ISprite, parent: string): void {

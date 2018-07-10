@@ -9,5 +9,6 @@ export interface ISpriteMoveEvent extends IWorkerEvent {
     z: number;
     timespan: number;
     ease: string;
+    wait: number;
   };
 }

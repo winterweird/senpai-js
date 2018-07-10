@@ -146,10 +146,10 @@ export class Stage extends StageInteractionManager {
 
       // capture uncaptured points and emit point-move events
       for (point of this.points) {
-        if (this.points[i].captured) {
+        if (point.captured) {
           continue;
         }
-        super.emit("point-move", this, this.points[i]);
+        super.emit("point-move", this, point);
       }
     }
     super.emit("post-collision");
