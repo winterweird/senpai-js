@@ -4,7 +4,6 @@ import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
 export interface IVirtualClose extends IVirtualActor {
   type: "close";
-  selected: boolean;
 }
 
 export function compareClose(before: IVirtualClose, after: IVirtualClose, events: IWorkerEvent[]): void {
