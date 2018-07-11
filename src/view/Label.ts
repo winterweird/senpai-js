@@ -7,6 +7,7 @@ export interface ILabel extends ISprite {
   fontColor: string;
   textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
   textAlign: "left" | "right" | "center" | "start" | "end";
+  setText(text: string): this;
 }
 
 export interface ILabelProps extends ISpriteProps {
@@ -51,6 +52,11 @@ export class Label extends Sprite implements ILabel {
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);
+  }
+
+  public setText(text: string): this {
+    this.text = text;
+    return this;
   }
 }
 

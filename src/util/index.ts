@@ -1,3 +1,4 @@
+import get from "lodash.get";
 import { ISprite } from "../view/Sprite";
 
 export interface IPoint {
@@ -141,9 +142,9 @@ export interface IHasParent {
   parent: string;
 }
 
-export function compareProps<T>(a: T, b: T, props: string[]): boolean {
+export function compareProps<T>(a: T, b: T, props: Array<string | string[]>): boolean {
   for (const prop of props) {
-    if (a[prop] !== b[prop]) {
+    if (get(a, prop) !== get(b, prop)) {
       return true;
     }
   }

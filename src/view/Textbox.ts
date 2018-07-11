@@ -110,6 +110,11 @@ export class Textbox extends Sprite implements ITextbox {
   }
 
   public setText(text: string): this {
+    if (text.startsWith(this.text)) {
+      this.text = text;
+      return this;
+    }
+
     this.text = text;
     this.interpolatedText = [""];
     this.textIndex = 0;

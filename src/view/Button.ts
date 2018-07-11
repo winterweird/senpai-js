@@ -11,6 +11,7 @@ export interface IButton extends ISprite {
   text: string;
   textAlign: "left" | "right" | "center" | "start" | "end";
   textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  setText(text: string): this;
 }
 
 export interface IButtonProps extends ISpriteProps {
@@ -61,6 +62,11 @@ export class Button extends Sprite implements IButton {
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);
+  }
+
+  public setText(text: string): this {
+    this.text = text;
+    return this;
   }
 }
 

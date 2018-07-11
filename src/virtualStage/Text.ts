@@ -12,7 +12,7 @@ export interface IText {
   textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 }
 
-const textProps = [
+export const textProps = [
   "font",
   "fontColor",
   "fontSize",

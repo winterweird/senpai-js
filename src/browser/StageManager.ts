@@ -20,7 +20,7 @@ import { ISliderValueChangeEvent } from "../events/ISliderValueChangeEvent";
 import { ISpriteMoveEvent } from "../events/ISpriteMoveEvent";
 import { ISpriteRemoveEvent } from "../events/ISpriteRemoveEvent";
 import { IStopSoundEvent } from "../events/IStopSoundEvent";
-import { ITextboxAppendEvent } from "../events/ITextboxAppendEvent";
+import { ITextboxChangeEvent } from "../events/ITextboxChangeEvent";
 import { ITextChangeEvent } from "../events/ITextChangeEvent";
 import { ITextureChangeEvent } from "../events/ITextureChangeEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
@@ -175,11 +175,6 @@ export class StageManager extends Stage implements IStageManager {
       return;
     }
 
-    if (event.type === "textbox-append") {
-      await this.handleTextboxAppend(event as ITextboxAppendEvent);
-      return;
-    }
-
     if (event.type === "text-change") {
       await this.handleTextChange(event as ITextChangeEvent);
       return;
@@ -220,6 +215,9 @@ export class StageManager extends Stage implements IStageManager {
       return;
     }
 
+    if (event.type === "textbox-change") {
+      await this.handleTextboxChange(event as ITextboxChangeEvent);
+    }
     throw new Error(`Event unhandled: ${event.type}.`);
   }
 
@@ -338,15 +336,10 @@ export class StageManager extends Stage implements IStageManager {
       .removeAllListeners("toggle");
   }
 
-  private async handleTextboxAppend(event: ITextboxAppendEvent): Promise<void> {
-    const t: ITextbox = this.index[event.props.id] as ITextbox;
-    t.appendText(event.props.append);
-  }
-
   private async handleTextChange(event: ITextChangeEvent): Promise<void> {
     const t: ILabel | ITextbox | IButton | ICheckbox
       = this.index[event.props.id] as ILabel | ITextbox | IButton | ICheckbox;
-    t.text = event.props.text;
+    t.setText(event.props.text);
     t.font = event.props.font;
     t.fontColor = event.props.fontColor;
     t.fontSize = event.props.fontSize;
@@ -410,6 +403,13 @@ export class StageManager extends Stage implements IStageManager {
 
   private async handleLoadFonts(event: ILoadFontsEvent): Promise<void> {
     await loadFonts(require("../../assets/fonts/*.*"));
+  }
+
+  private async handleTextboxChange(event: ITextboxChangeEvent): Promise<void> {
+    const s: ITextbox = this.index[event.props.id] as ITextbox;
+    s.lineHeight = event.props.lineHeight;
+    s.padding = event.props.padding;
+    s.textSpeed = event.props.textSpeed;
   }
 
   private indexAndAdd(child: ISprite, parent: string): void {

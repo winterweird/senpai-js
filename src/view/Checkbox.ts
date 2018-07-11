@@ -11,6 +11,7 @@ export interface ICheckbox extends ISprite {
   textAlign: "left" | "right" | "center" | "start" | "end";
   textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
 
+  setText(text: string): this;
   toggle(): this;
 }
 
@@ -74,6 +75,11 @@ export class Checkbox extends Sprite implements ICheckbox {
 
     this.cursor = this.hover ? "pointer" : "default";
     super.update();
+  }
+
+  public setText(text: string): this {
+    this.text = text;
+    return this;
   }
 }
 
