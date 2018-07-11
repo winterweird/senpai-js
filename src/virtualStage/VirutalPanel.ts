@@ -1,12 +1,12 @@
 import { ICreatePanelEvent } from "../events/ICreatePanelEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface IPanel extends IActor {
+export interface IVirtualPanel extends IVirtualActor {
   type: "panel";
 }
 
-export function comparePanels(before: IPanel, after: IPanel, events: IWorkerEvent[]): void {
+export function comparePanels(before: IVirtualPanel, after: IVirtualPanel, events: IWorkerEvent[]): void {
 
   // character creation
   if (!before && after) {

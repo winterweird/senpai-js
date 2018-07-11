@@ -1,15 +1,15 @@
 import { ICreateCharacterEvent } from "../events/ICreateCharacterEvent";
 import { ITextureChangeEvent } from "../events/ITextureChangeEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ICharacter extends IActor {
+export interface IVirtualCharacter extends IVirtualActor {
   type: "character";
   name: string;
   texture: string;
 }
 
-export function compareCharacters(before: ICharacter, after: ICharacter, events: IWorkerEvent[]): void {
+export function compareCharacters(before: IVirtualCharacter, after: IVirtualCharacter, events: IWorkerEvent[]): void {
 
   // character creation
   if (!before && after) {

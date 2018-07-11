@@ -1,15 +1,15 @@
 import { ICheckboxCheckedEvent } from "../events/ICheckboxCheckedEvent";
 import { ICreateCheckboxEvent } from "../events/ICreateCheckboxEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
 import { compareText, IText } from "./Text";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ICheckbox extends IActor, IText {
+export interface IVirtualCheckbox extends IVirtualActor, IText {
   type: "checkbox";
   checked: boolean;
 }
 
-export function compareCheckboxes(before: ICheckbox, after: ICheckbox, events: IWorkerEvent[]): void {
+export function compareCheckboxes(before: IVirtualCheckbox, after: IVirtualCheckbox, events: IWorkerEvent[]): void {
 
   // character creation
   if (!before && after) {

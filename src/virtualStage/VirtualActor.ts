@@ -1,10 +1,10 @@
 import { ISpriteMoveEvent } from "../events/ISpriteMoveEvent";
 import { ISpriteRemoveEvent } from "../events/ISpriteRemoveEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import * as m from "../matrix/index";
+import * as m from "../matrix";
 import { compareProps } from "../util";
 
-export interface IActor {
+export interface IVirtualActor {
   id: string;
   type: string;
   x: number;
@@ -37,7 +37,7 @@ const actorProps = [
   "wait",
 ];
 
-export function compareActors(before: IActor, after: IActor, events: IWorkerEvent[]): void {
+export function compareActors(before: IVirtualActor, after: IVirtualActor, events: IWorkerEvent[]): void {
   if (before && after && compareProps(before, after, actorProps)) {
     events.push(
       {
@@ -67,7 +67,7 @@ export function compareActors(before: IActor, after: IActor, events: IWorkerEven
   }
 }
 
-export function createPosition(actor: IActor): number[] | Float64Array {
+export function createPosition(actor: IVirtualActor): number[] | Float64Array {
   return m.chain()
   .translate(actor.x, actor.y)
   .scale(actor.scaleX, actor.scaleY)

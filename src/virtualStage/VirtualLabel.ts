@@ -1,13 +1,13 @@
 import { ICreateLabelEvent } from "../events/ICreateLabelEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
 import { compareText, IText } from "./Text";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ILabel extends IActor, IText {
+export interface IVirtualLabel extends IVirtualActor, IText {
   type: "label";
 }
 
-export function compareLabels(before: ILabel, after: ILabel, events: IWorkerEvent[]): void {
+export function compareLabels(before: IVirtualLabel, after: IVirtualLabel, events: IWorkerEvent[]): void {
 
   // label creation
   if (!before && after) {

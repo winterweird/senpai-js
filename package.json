@@ -28,6 +28,7 @@
   "dependencies": {
     "electron": "^2.0.4",
     "electron-builder": "^20.19.2",
+    "lodash.find": "^4.6.0",
     "lodash.get": "^4.4.2",
     "split-to-words": "^1.0.2",
     "typescript": "^3.0.0-dev.20180707"

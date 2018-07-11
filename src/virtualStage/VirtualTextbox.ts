@@ -2,10 +2,10 @@ import { ICreateTextboxEvent } from "../events/ICreateTextbox";
 import { ITextboxChangeEvent } from "../events/ITextboxChangeEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
 import { compareProps, IPadding } from "../util";
-import { compareActors, createPosition, IActor } from "./Actor";
 import { compareText, IText } from "./Text";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ITextbox extends IActor, IText {
+export interface IVirtualTextbox extends IVirtualActor, IText {
   type: "textbox";
   textSpeed: number;
   padding: IPadding;
@@ -21,7 +21,7 @@ const textboxProps = [
   "textSpeed",
 ];
 
-export function compareTextboxes(before: ITextbox, after: ITextbox, events: IWorkerEvent[]): void {
+export function compareTextboxes(before: IVirtualTextbox, after: IVirtualTextbox, events: IWorkerEvent[]): void {
 
   // textbox creation
   if (!before && after) {

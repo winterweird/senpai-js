@@ -1,13 +1,13 @@
 import { ICreateCloseEvent } from "../events/ICreateCloseEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface IClose extends IActor {
+export interface IVirtualClose extends IVirtualActor {
   type: "close";
   selected: boolean;
 }
 
-export function compareClose(before: IClose, after: IClose, events: IWorkerEvent[]): void {
+export function compareClose(before: IVirtualClose, after: IVirtualClose, events: IWorkerEvent[]): void {
 
   // character creation
   if (!before && after) {

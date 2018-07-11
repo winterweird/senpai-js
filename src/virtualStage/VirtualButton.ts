@@ -1,15 +1,15 @@
 import { IButtonSelectedEvent } from "../events/IButtonSelected";
 import { ICreateButtonEvent } from "../events/ICreateButtonEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareActors, createPosition, IActor } from "./Actor";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 import { compareText, IText } from "./Text";
 
-export interface IButton extends IActor, IText {
+export interface IVirtualButton extends IVirtualActor, IText {
   type: "button";
   selected: boolean;
 }
 
-export function compareButtons(before: IButton, after: IButton, events: IWorkerEvent[]): void {
+export function compareButtons(before: IVirtualButton, after: IVirtualButton, events: IWorkerEvent[]): void {
 
   // button creation
   if (!before && after) {

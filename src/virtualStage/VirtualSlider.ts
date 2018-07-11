@@ -2,9 +2,9 @@ import { ICreateSliderEvent } from "../events/ICreateSliderEvent";
 import { ISliderValueChangeEvent } from "../events/ISliderValueChangeEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
 import { compareProps } from "../util";
-import { compareActors, createPosition, IActor } from "./Actor";
+import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ISlider extends IActor {
+export interface ISlider extends IVirtualActor {
   type: "slider";
   value: number;
   max: number;
