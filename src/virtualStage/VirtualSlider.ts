@@ -4,7 +4,7 @@ import { IWorkerEvent } from "../events/IWorkerEvent";
 import { compareProps } from "../util";
 import { compareActors, createPosition, IVirtualActor } from "./VirtualActor";
 
-export interface ISlider extends IVirtualActor {
+export interface IVirtualSlider extends IVirtualActor {
   type: "slider";
   value: number;
   max: number;
@@ -19,7 +19,7 @@ const sliderProps = [
   "width",
 ];
 
-export function compareSliders(before: ISlider, after: ISlider, events: IWorkerEvent[]): void {
+export function compareSliders(before: IVirtualSlider, after: IVirtualSlider, events: IWorkerEvent[]): void {
 
   // character creation
   if (!before && after) {
