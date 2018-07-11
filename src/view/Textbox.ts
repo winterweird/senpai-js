@@ -1,6 +1,6 @@
 import assert from "assert";
 import splitToWords from "split-to-words";
-import { createTextureMap, ILoadProps, IPadding, ITextureMap, loadImage } from "../util";
+import { createTextureMap, ILoadProps, IPadding, ITextureMap, loadImage, TextAlign, TextBaseline } from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 const tempctx = document.createElement("canvas").getContext("2d");
@@ -14,8 +14,8 @@ export interface ITextbox extends ISprite {
   font: string;
   fontColor: string;
   lineHeight: number;
-  textAlign: "left" | "right" | "center" | "start" | "end";
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
 
   setText(text: string): this;
   appendText(text: string): this;
@@ -25,8 +25,8 @@ export interface ITextboxProps extends ISpriteProps {
   text?: string;
   textSpeed?: number;
   textIndex?: number;
-  textAlign?: "left" | "right" | "center" | "start" | "end";
-  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign?: TextAlign;
+  textBaseline?: TextBaseline;
   padding?: IPadding;
   fontSize?: number;
   font?: string;
@@ -48,8 +48,8 @@ export class Textbox extends Sprite implements ITextbox {
   public font: string = "monospace";
   public fontColor: string = "black";
   public lineHeight: number = 16;
-  public textAlign: "left" | "right" | "center" | "start" | "end" = "left";
-  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
+  public textAlign: TextAlign = TextAlign.left;
+  public textBaseline: TextBaseline = TextBaseline.hanging;
   private interpolatedText: string[] = [""];
 
   constructor(props: ITextboxProps) {

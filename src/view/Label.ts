@@ -1,3 +1,4 @@
+import { TextAlign, TextBaseline } from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface ILabel extends ISprite {
@@ -5,8 +6,8 @@ export interface ILabel extends ISprite {
   font: string;
   fontSize: number;
   fontColor: string;
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
-  textAlign: "left" | "right" | "center" | "start" | "end";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
   setText(text: string): this;
 }
 
@@ -15,8 +16,8 @@ export interface ILabelProps extends ISpriteProps {
   font?: string;
   fontSize?: number;
   fontColor?: string;
-  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
-  textAlign?: "left" | "right" | "center" | "start" | "end";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
 }
 
 const tempctx = document.createElement("canvas").getContext("2d");
@@ -26,8 +27,8 @@ export class Label extends Sprite implements ILabel {
   public font: string = "monospace";
   public fontSize: number = 12;
   public fontColor: string = "black";
-  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "hanging";
-  public textAlign: "left" | "right" | "center" | "start" | "end" = "start";
+  public textAlign: TextAlign = TextAlign.start;
+  public textBaseline: TextBaseline = TextBaseline.hanging;
 
   constructor(props: ILabelProps) {
     super(props);

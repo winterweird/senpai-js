@@ -1,4 +1,4 @@
-import { createTextureMap, ILoadProps, ITextureMap, loadImage } from "../util";
+import { createTextureMap, ILoadProps, ITextureMap, loadImage, TextAlign, TextBaseline } from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 import assert from "assert";
@@ -9,8 +9,8 @@ export interface IButton extends ISprite {
   fontColor: string;
   fontSize: number;
   text: string;
-  textAlign: "left" | "right" | "center" | "start" | "end";
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
   setText(text: string): this;
 }
 
@@ -20,8 +20,8 @@ export interface IButtonProps extends ISpriteProps {
   fontColor?: string;
   fontSize?: number;
   text?: string;
-  textAlign?: "left" | "right" | "center" | "start" | "end";
-  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign?: TextAlign;
+  textBaseline?: TextBaseline;
 }
 
 export class Button extends Sprite implements IButton {
@@ -30,8 +30,8 @@ export class Button extends Sprite implements IButton {
   public fontColor: string = "black";
   public fontSize: number = 12;
   public text: string =  "";
-  public textAlign: "left" | "right" | "center" | "start" | "end" = "center";
-  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "middle";
+  public textAlign: TextAlign = TextAlign.center;
+  public textBaseline: TextBaseline = TextBaseline.middle;
 
   constructor(props: IButtonProps) {
     super(props);
@@ -57,8 +57,8 @@ export class Button extends Sprite implements IButton {
   public render(ctx: CanvasRenderingContext2D): void {
     super.render(ctx);
     ctx.translate(this.texture.width * 0.5, this.texture.height * 0.5);
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
+    ctx.textBaseline = TextBaseline.middle;
+    ctx.textAlign = TextAlign.center;
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.text, 0, 0);

@@ -1,6 +1,6 @@
 import { ITextChangeEvent } from "../events/ITextChangeEvent";
 import { IWorkerEvent } from "../events/IWorkerEvent";
-import { compareProps } from "../util";
+import { compareProps, TextAlign, TextBaseline } from "../util";
 
 export interface IText {
   id: string;
@@ -8,8 +8,8 @@ export interface IText {
   fontColor: string;
   fontSize: number;
   text: string;
-  textAlign: "left" | "right" | "center" | "start" | "end";
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
 }
 
 export const textProps = [

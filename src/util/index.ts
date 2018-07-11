@@ -150,3 +150,20 @@ export function compareProps<T>(a: T, b: T, props: Array<string | string[]>): bo
   }
   return false;
 }
+
+export enum TextAlign {
+  "left" = "left",
+  "right" = "right",
+  "center" = "center",
+  "start" = "start",
+  "end" = "end",
+}
+
+export enum TextBaseline {
+  "top" = "top",
+  "hanging" = "hanging",
+  "middle" = "middle",
+  "alphabetic" = "alphabetic",
+  "ideographic" = "ideographic",
+  "bottom" = "bottom",
+}

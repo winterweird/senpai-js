@@ -1,5 +1,13 @@
 import assert from "assert";
-import { createTextureMap, IInteractionPoint, ILoadProps, ITextureMap, loadImage } from "../util";
+import {
+  createTextureMap,
+  IInteractionPoint,
+  ILoadProps,
+  ITextureMap,
+  loadImage,
+  TextAlign,
+  TextBaseline,
+} from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
 export interface ICheckbox extends ISprite {
@@ -8,8 +16,8 @@ export interface ICheckbox extends ISprite {
   font: string;
   fontColor: string;
   fontSize: number;
-  textAlign: "left" | "right" | "center" | "start" | "end";
-  textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
 
   setText(text: string): this;
   toggle(): this;
@@ -21,8 +29,8 @@ export interface ICheckboxProps extends ISpriteProps {
   font?: string;
   fontColor?: string;
   fontSize?: number;
-  textAlign?: "left" | "right" | "center" | "start" | "end";
-  textBaseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom";
+  textAlign?: TextAlign;
+  textBaseline?: TextBaseline;
 }
 
 export class Checkbox extends Sprite implements ICheckbox {
@@ -31,8 +39,8 @@ export class Checkbox extends Sprite implements ICheckbox {
   public font: string = "monospace";
   public fontColor: string = "black";
   public fontSize: number = 12;
-  public textAlign: "left" | "right" | "center" | "start" | "end" = "left";
-  public textBaseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "middle";
+  public textAlign: TextAlign = TextAlign.left;
+  public textBaseline: TextBaseline = TextBaseline.middle;
 
   constructor(props: ICheckboxProps) {
     super(props);
