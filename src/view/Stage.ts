@@ -149,7 +149,7 @@ export class Stage extends StageInteractionManager {
         if (point.captured) {
           continue;
         }
-        super.emit("point-move", this, point);
+        super.emit("point-move", null, point);
       }
     }
     super.emit("post-collision");

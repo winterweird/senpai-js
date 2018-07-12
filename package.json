@@ -4,12 +4,11 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "run-s compile-grammar parcel-build dev-server",
+    "start": "run-s dev-server",
     "dev-server": "run-p parcel-watch electron-dev",
     "electron-dev": "electron .",
     "parcel-build": "parcel build ./src/index.html --target=electron --no-cache",
-    "parcel-watch": "parcel watch ./src/index.html --target=electron --no-cache --no-hmr",
-    "compile-grammar": "nearleyc plugins/assets/prjs-grammar.ne -o plugins/assets/prjs-grammar.js"
+    "parcel-watch": "parcel watch ./src/index.html --target=electron --no-cache --no-hmr"
   },
   "author": "Joshua <tenner.joshua@gmail.com>",
   "license": "MIT",
