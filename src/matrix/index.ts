@@ -10,6 +10,7 @@ export interface IMatrix {
   skewY(angle: number): IMatrix;
   transform(props: Float64Array | number[]): IMatrix;
   inverse(): IMatrix;
+  reset(): IMatrix;
   set(target: Float64Array | number[]): IMatrix;
 }
 
@@ -84,6 +85,14 @@ export class Matrix implements IMatrix {
       return m;
     }
     transform(this.value, props, this.value);
+    return this;
+  }
+
+  public reset(): IMatrix {
+    if (this.immutable) {
+      return chain();
+    }
+    reset(this.value);
     return this;
   }
 
@@ -252,6 +261,10 @@ export function set(target: Float64Array | number[], source: Float64Array | numb
   for (let i = 0; i < target.length && i < source.length; i++) {
     target[i] = source[i];
   }
+}
+
+export function reset(target: Float64Array | number[]): void {
+  return set(target, [1, 0, 0, 1, 0, 0]);
 }
 
 export function chain(

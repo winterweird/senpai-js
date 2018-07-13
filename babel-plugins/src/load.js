@@ -3,22 +3,20 @@ const template = require("babel-template");
 
 const t = template(`(function(){
   const args = ARGS;
-  return new Promise(function(resolve, reject) {
-    setTimeout(resolve, args[0]);
-  });
+  return sm.load(...args);
 }())`);
 
 
 module.exports = {
   check(path) {
-    return types.isIdentifier(path.node.callee) && path.node.callee.name === "wait";
+    return types.isIdentifier(path.node.callee) && path.node.callee.name === "load";
   },
   transform(path) {
     const { expression } = t({
-      ARGS: types.arrayExpression(path.node.arguments[0]),
+      ARGS: types.arrayExpression(path.node.arguments),
     });
     return path.replaceWith(
-      types.yieldExpression(expression, true)
+      types.yieldExpression(expression, false)
     );
   },
 };

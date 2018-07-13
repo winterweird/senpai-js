@@ -13,10 +13,14 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: config.window.width,
     height: config.window.height,
+    webPreferences: {
+      nodeIntegrationInWorker: true
+    },
   });
-  mainWindow.maximize();
   mainWindow.setFullScreen(true);
-  
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.toggleDevTools();
+  }
   const PROTOCOL = "file";
   mainWindow.loadURL(
     url.format({

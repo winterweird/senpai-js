@@ -61,6 +61,7 @@ export interface ISprite extends ISize {
   once(event: string, callback: () => void): this;
 
   removeAllListeners(event: string | symbol): this;
+  eventNames(): Array<string | symbol>;
 }
 
 export interface ISpriteProps {

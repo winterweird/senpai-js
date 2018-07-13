@@ -1,9 +1,9 @@
 const types = require("babel-types");
 const template = require("babel-template");
-const getAPIIdentifier = require("./getAPIIdentifier");
+
 const t = template(`(function() {
   const args = ARGS;
-  return API.TYPE(...args);
+  return sm.TYPE(...args);
 } ())`);
 
 const index = {
@@ -25,7 +25,6 @@ module.exports = {
   transform(path) {
     const { expression } = t({
       TYPE: types.identifier(index[path.node.callee.name]),
-      API: getAPIIdentifier(path),
       ARGS: types.arrayExpression(path.node.arguments),
     });
     return path.replaceWith(expression);

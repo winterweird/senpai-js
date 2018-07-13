@@ -14,14 +14,11 @@ export interface ISoundSpriteSheet {
 export interface ISoundSprite {
   id: string;
   source: AudioNode;
-  volume: GainNode;
-  destination: AudioNode;
+  gain: GainNode;
   definition: ISoundSpriteSheet;
-
   sound: string;
   playing: boolean;
   paused: boolean;
-
   play(): void;
   pause(): void;
   stop(): void;
@@ -29,11 +26,11 @@ export interface ISoundSprite {
 
 export interface ISoundSpriteProps {
   id: string;
+  context: AudioContext;
+  name: string;
   source: AudioBufferSourceNode;
-  volume: GainNode;
-  destination: AudioNode;
   definition: ISoundSpriteSheet;
-  gain?: number;
+  volume?: number;
 }
 
 export interface IAudioEventDefinition {
@@ -44,8 +41,7 @@ export interface IAudioEventDefinition {
 export class SoundSprite extends EventEmitter implements ISoundSprite {
   public id: string = "";
   public source: AudioBufferSourceNode = null;
-  public volume: GainNode = null;
-  public destination: AudioNode;
+  public gain: GainNode = null;
   public definition: ISoundSpriteSheet;
   public sound: string = "";
   public playing: boolean = false;
@@ -62,10 +58,9 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
     super();
     this.id = props.id;
     this.source = props.source;
-    this.volume = props.volume;
-    this.destination = props.destination;
+    this.gain = props.context.createGain();
     this.definition = props.definition;
-    this.volume.gain.value = props.hasOwnProperty("gain") ? props.gain : 1;
+    this.gain.gain.value = props.hasOwnProperty("volume") ? props.volume : 1;
     this.setup();
   }
 
@@ -124,8 +119,7 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
   }
 
   public dispose() {
-    this.source.disconnect(this.volume);
-    this.volume.disconnect(this.destination);
+    this.source.disconnect(this.gain);
     this.events.forEach(e => this.source.removeEventListener(e.type, e.event));
   }
 
@@ -134,29 +128,23 @@ export class SoundSprite extends EventEmitter implements ISoundSprite {
   }
 
   private setup(): void {
-    this.source.connect(this.volume);
-    this.volume.connect(this.destination);
+    this.source.connect(this.gain);
     this.events.forEach(e => this.source.addEventListener(e.type, e.event));
   }
 }
 
-export interface ILoadSoundSpriteProps {
-  id: string;
-  buffer: ArrayBuffer;
+export interface ILoadSoundSpriteProps extends ISoundSpriteProps {
+  src: string;
   context: AudioContext;
   definition: ISoundSpriteSheet;
 }
 
 export async function loadSoundSprite(props: ILoadSoundSpriteProps): Promise<ISoundSprite> {
-  const buffer = await props.context.decodeAudioData(props.buffer);
+  const response = await fetch(props.src);
+  const buffer = await response.arrayBuffer();
+  const audioBuffer = await props.context.decodeAudioData(buffer);
   const source = props.context.createBufferSource();
-  source.buffer = buffer;
-  const sprite = new SoundSprite({
-    definition: props.definition,
-    destination: props.context.destination,
-    id: props.id,
-    source,
-    volume: props.context.createGain(),
-  });
-  return sprite;
+  source.buffer = audioBuffer;
+  props.source = source;
+  return new SoundSprite(props);
 }
