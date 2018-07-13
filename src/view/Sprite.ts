@@ -89,7 +89,7 @@ export class Sprite extends EventEmitter implements ISprite {
   public animationStart: number = 0;
   public ease = eases.easeLinear;
   public cursor: ("pointer" | "default") = "default";
-  public animationLength: number = 400;
+  public animationLength: number = 0;
   public active: boolean = false;
   public hover: boolean = false;
   public clicked: boolean = false;

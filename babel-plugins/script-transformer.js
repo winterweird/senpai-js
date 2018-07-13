@@ -3,6 +3,9 @@ const go = require("./src/go");
 const load = require("./src/load");
 const generator = require("./src/generator");
 const show = require("./src/show");
+const hide = require("./src/hide");
+const say = require("./src/say");
+const move = require("./src/move");
 
 const { relative } = require("path");
 const use = (...plugins) => function(path, state) {
@@ -24,7 +27,8 @@ module.exports = function(babel) {
         exit: use(generator),
       },
       NewExpression: use(actor),
-      CallExpression: use(actor, go, load, show),
+      CallExpression: use(actor, go, load, show, hide, move),
+      TaggedTemplateExpression: use(say),
     }
   };
 };

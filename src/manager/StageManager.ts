@@ -1,4 +1,5 @@
 
+import * as eases from "../ease";
 import { chain } from "../matrix";
 import { ISpriteSheet } from "../util";
 import { IButton, ILoadButtonProps, loadButton } from "../view/Button";
@@ -56,6 +57,7 @@ export interface IStageManager extends IStage {
   getPosition(sprite: ISprite): IPosition;
   load(script: string, index: number): void;
   show(sprite: ISprite, ...positions): void;
+  move(sprite: ISprite, ...positions): void;
 }
 
 export interface ISoundImportIndex {
@@ -78,10 +80,13 @@ export interface IPosition {
   r?: number;
   a?: number;
   z?: number;
+  animationLength?: number;
+  ease?: string;
+  wait: number;
 }
 
 export interface IScriptMap {
-  [name: string]: GeneratorFunction;
+  [name: string]: () => Promise<any>;
 }
 
 export class StageManager extends Stage implements IStageManager {
@@ -104,7 +109,6 @@ export class StageManager extends Stage implements IStageManager {
   private static ScriptImports: IScriptMap = require("../../script");
 
   public script: Generator = null;
-  public advance: Promise<void> = null;
   public spriteIndex: ISpriteIndex = {};
   public index: number = 0;
   public history: IHistoryState[] = [];
@@ -209,32 +213,39 @@ export class StageManager extends Stage implements IStageManager {
       this.removeSprite(sprite);
     }
 
-    this.script = StageManager.ScriptImports[script]();
     this.index = index;
     this.history = [];
-    this.advance = this.script.next().value;
     this.spriteIndex = {};
+    StageManager.ScriptImports[script]().then(
+      e => {
+        console.log(e);
+      },
+    );
 
-    for (let i = 0; i < index; i++) {
-      this.advance = this.script.next().value;
-    }
     return this;
-  }
-
-  public firstDown() {
-    return new Promise(resolve => {
-      this.once("firstdown", resolve);
-    });
   }
 
   public show(sprite: ISprite, ...positions: IPosition[]): void {
     this.addSprite(sprite);
+    this.move(sprite, ...positions);
+  }
+
+  public move(sprite: ISprite, ...positions): void {
     const position = this.getPosition(sprite);
     Object.assign(position, ...positions);
     this.updateSpritePosition(sprite);
   }
 
-  public says(name: string, color: string): Promise<void> {
+  public says(says: string, name: string, color: string): Promise<void> {
+    const tb: ITextbox = this.spriteIndex.tb as ITextbox;
+    const sb: ILabel = this.spriteIndex.sb as ILabel;
+    if (tb) {
+      tb.setText(says);
+    }
+    if (sb) {
+      sb.setText(name);
+      sb.fontColor = color;
+    }
     return new Promise(resolve => this.once("firstdown", resolve));
   }
 
@@ -248,11 +259,14 @@ export class StageManager extends Stage implements IStageManager {
 
       StageManager.Positions.set(sprite, {
         a: 1,
+        animationLength: 0,
         cx: 0,
         cy: 0,
+        ease: "linear",
         r: 0,
         sx: 1,
         sy: 1,
+        wait: 0,
         x: 0,
         y: 0,
         z: Math.max(0, ...zs) + 1,
@@ -260,24 +274,16 @@ export class StageManager extends Stage implements IStageManager {
     }
   }
 
-  private attemptAdvance(): void {
-    if (this.advance) {
-      return;
-    }
-    const result = this.script.next();
+  private async attemptAdvance(): Promise<void> {
+    const result = await this.script.next();
     if (result.done) {
       this.load("index", 0);
       return;
     }
     result
       .value
-      .then(e => {
-        this.advance = null;
-        this.attemptAdvance();
-      })
-      .catch(e => {
-        console.log(e);
-      });
+      .then(e => this.attemptAdvance())
+      .catch(e => console.log(e));
 
     for (const sprite of this.sprites) {
       this.updateSpritePosition(sprite);
@@ -291,6 +297,17 @@ export class StageManager extends Stage implements IStageManager {
       .rotate(position.r)
       .scale(position.sx, position.sy)
       .translate(-position.cx, -position.cy);
+    sprite
+      .move(sprite.position)
+      .over(
+        position.hasOwnProperty("animationLength")
+          ? position.animationLength
+          : sprite.animationLength,
+        position.wait || 0,
+        position.hasOwnProperty("ease")
+          ? eases[position.ease]
+          : sprite.ease,
+      );
   }
 
 }

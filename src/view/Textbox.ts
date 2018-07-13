@@ -91,6 +91,7 @@ export class Textbox extends Sprite implements ITextbox {
   }
 
   public render(ctx: CanvasRenderingContext2D) {
+    super.render(ctx);
     const maxHeight = this.texture.height - this.padding.top;
     let height = this.padding.top;
 
