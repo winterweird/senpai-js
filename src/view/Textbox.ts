@@ -1,5 +1,4 @@
 import assert from "assert";
-import splitToWords from "split-to-words";
 import { createTextureMap, ILoadProps, IPadding, ITextureMap, loadImage, TextAlign, TextBaseline } from "../util";
 import { ISprite, ISpriteProps, Sprite } from "./Sprite";
 
@@ -35,6 +34,8 @@ export interface ITextboxProps extends ISpriteProps {
 }
 
 export class Textbox extends Sprite implements ITextbox {
+  private static regex: RegExp = /\n|[^\W]*[\t\r ]?/g;
+
   public text: string = "";
   public textSpeed: number = 1;
   public textIndex: number = 0;
@@ -71,21 +72,55 @@ export class Textbox extends Sprite implements ITextbox {
   public update() {
     const maxWidth = this.texture.width - this.padding.left - this.padding.right;
     this.textIndex = Math.min(this.text.length, this.textIndex + this.textSpeed);
-    const words = splitToWords(this.text.slice(0, Math.floor(this.textIndex)));
+    const words = this.text.match(Textbox.regex);
     this.interpolatedText = [""];
-
+    const maxLines = (this.texture.height - this.padding.top - this.padding.bottom) / this.lineHeight;
     let line: string = "";
+    let lineIndex: number = 0;
     let measurement: TextMetrics;
-
+    let leftOver: number = this.textIndex;
     tempctx.font = `${this.fontSize}px ${this.font}`;
 
     for (const word of words) {
-      line = this.interpolatedText[this.interpolatedText.length - 1] + " " + word;
+
+      // If the next character is a newline, push a new line
+      if (word === "\n") {
+        this.interpolatedText.push("");
+        line = "";
+        leftOver -= 1;
+        lineIndex += 1;
+        continue;
+      }
+
+      // If the text hasn't completed and the word length causes some leftOver, remove it
+      if (leftOver === 0) {
+        this.interpolatedText[lineIndex] = line.slice(0, leftOver);
+        break;
+      }
+
+      // If the line count is greater than the maximum number of lines, break
+      if ((lineIndex + 1) > maxLines) {
+        break;
+      }
+
+      // Test the word length
+      line += word;
       measurement = tempctx.measureText(line);
+
+      // If the line overflows
       if (measurement.width > maxWidth) {
-        this.interpolatedText.push(word);
-      } else {
-        this.interpolatedText[this.interpolatedText.length - 1] = line;
+        lineIndex = this.interpolatedText.push("") - 1;
+      }
+
+      // Add the text to the screen
+      this.interpolatedText[lineIndex] += word;
+      line = this.interpolatedText[lineIndex];
+      leftOver -= word.length;
+
+      // Check to see if the word overFlows the animation
+      if (leftOver < 0) {
+        this.interpolatedText[lineIndex] = line.slice(0, leftOver);
+        break;
       }
     }
   }
@@ -93,20 +128,28 @@ export class Textbox extends Sprite implements ITextbox {
   public render(ctx: CanvasRenderingContext2D) {
     super.render(ctx);
     const maxHeight = this.texture.height - this.padding.top;
-    let height = this.padding.top;
+    let currentHeight = this.padding.top;
 
     ctx.font = `${this.fontSize}px ${this.font}`;
     ctx.fillStyle = this.fontColor;
     ctx.textAlign = this.textAlign;
     ctx.textBaseline = this.textBaseline;
 
+    ctx.beginPath();
+    ctx.rect(
+      this.padding.left,
+      this.padding.bottom,
+      this.width - this.padding.right,
+      this.height - this.padding.top,
+    );
+    ctx.clip();
     for (const line of this.interpolatedText) {
-      if (height + this.fontSize > maxHeight) {
+      if (currentHeight + this.fontSize > maxHeight) {
         break;
       }
 
-      ctx.fillText(line, this.padding.left, height);
-      height += this.lineHeight;
+      ctx.fillText(line, this.padding.left, currentHeight);
+      currentHeight += this.lineHeight;
     }
   }
 

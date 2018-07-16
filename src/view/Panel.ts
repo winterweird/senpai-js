@@ -55,7 +55,6 @@ export class Panel extends Sprite implements IPanel {
     for (const sprite of this.sprites) {
 
       sprite.down = false;
-      sprite.clicked = false;
       sprite.hover = false;
     }
     return super.broadPhase(point);
@@ -116,10 +115,10 @@ export class Panel extends Sprite implements IPanel {
     }
   }
 
-  public skipAnimation(): void {
-    super.skipAnimation();
+  public skipAnimation(now: number): void {
+    super.skipAnimation(now);
     for (const sprite of this.sprites) {
-      sprite.skipAnimation();
+      sprite.skipAnimation(now);
     }
   }
 }

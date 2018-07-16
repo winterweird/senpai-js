@@ -30,7 +30,6 @@ export interface ISprite extends ISize {
 
   active: boolean;
   hover: boolean;
-  clicked: boolean;
   down: boolean;
   cursor: "pointer" | "default";
 
@@ -41,6 +40,7 @@ export interface ISprite extends ISize {
 
   broadPhase(point: IInteractionPoint): boolean;
   narrowPhase(point: IInteractionPoint): ISprite;
+  isHovering(point: IInteractionPoint, now: number): ISprite;
   pointCollision(point: IInteractionPoint): boolean;
   keyStateChange(key: IKeyState): void;
   setTexture(texture: string): this;
@@ -49,7 +49,7 @@ export interface ISprite extends ISize {
   setZ(z: number): this;
   setAlpha(alpha: number): this;
   interpolate(now: number): void;
-  skipAnimation(): void;
+  skipAnimation(now: number): void;
   update(): void;
   render(ctx: CanvasRenderingContext2D): void;
   emit(event: string, ...args: any[]): boolean;
@@ -92,7 +92,6 @@ export class Sprite extends EventEmitter implements ISprite {
   public animationLength: number = 0;
   public active: boolean = false;
   public hover: boolean = false;
-  public clicked: boolean = false;
   public down: boolean = false;
   public textures: ITextureMap = {};
   public texture: ImageBitmap | HTMLCanvasElement | HTMLImageElement = new Image();
@@ -127,6 +126,14 @@ export class Sprite extends EventEmitter implements ISprite {
 
   public pointCollision(point: IInteractionPoint): boolean {
     return true;
+  }
+
+  public isHovering(point: IInteractionPoint, now: number): ISprite {
+    this.interpolate(now);
+    m.transformPoint(point, this.inverse);
+    if (this.broadPhase(point)) {
+      return this.narrowPhase(point);
+    }
   }
 
   public move(position: number[] | Float64Array): this {
@@ -169,8 +176,8 @@ export class Sprite extends EventEmitter implements ISprite {
     throw new Error("Not implemented.");
   }
 
-  public skipAnimation(): void {
-    this.animationLength = 0;
+  public skipAnimation(now: number): void {
+    this.animationStart = now - this.animationLength;
   }
 
   public update(): void {

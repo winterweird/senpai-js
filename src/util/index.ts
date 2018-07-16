@@ -53,6 +53,7 @@ export interface IInteractionPoint extends IPoint {
   clicked: boolean;
   captured: boolean;
   active: ISprite;
+  hover: ISprite;
   firstDown: boolean;
   tx: number;
   ty: number;
@@ -166,4 +167,8 @@ export enum TextBaseline {
   "alphabetic" = "alphabetic",
   "ideographic" = "ideographic",
   "bottom" = "bottom",
+}
+
+export function zSort(left: ISprite, right: ISprite): number {
+  return left.z - right.z;
 }
