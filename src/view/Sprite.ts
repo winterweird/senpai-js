@@ -49,7 +49,7 @@ export interface ISprite extends ISize {
   setZ(z: number): this;
   setAlpha(alpha: number): this;
   interpolate(now: number): void;
-  skipAnimation(now: number): void;
+  skipAnimation(now: number): boolean;
   update(): void;
   render(ctx: CanvasRenderingContext2D): void;
   emit(event: string, ...args: any[]): boolean;
@@ -176,8 +176,10 @@ export class Sprite extends EventEmitter implements ISprite {
     throw new Error("Not implemented.");
   }
 
-  public skipAnimation(now: number): void {
+  public skipAnimation(now: number): boolean {
+    const result: boolean = now < this.animationLength + this.animationStart;
     this.animationStart = now - this.animationLength;
+    return result;
   }
 
   public update(): void {

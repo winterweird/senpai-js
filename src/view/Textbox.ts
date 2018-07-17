@@ -34,7 +34,7 @@ export interface ITextboxProps extends ISpriteProps {
 }
 
 export class Textbox extends Sprite implements ITextbox {
-  private static regex: RegExp = /\n|[^\W]*[\t\r ]?/g;
+  private static regex: RegExp = /\r\n|\r|\n|[^\t ]*[\t ]?/g;
 
   public text: string = "";
   public textSpeed: number = 1;
@@ -84,17 +84,17 @@ export class Textbox extends Sprite implements ITextbox {
     for (const word of words) {
 
       // If the next character is a newline, push a new line
-      if (word === "\n") {
+      if (word === "\n" || word === "\r\n" || word === "\r") {
         this.interpolatedText.push("");
-        line = "";
-        leftOver -= 1;
+        leftOver -= word.length;
         lineIndex += 1;
         continue;
       }
 
-      // If the text hasn't completed and the word length causes some leftOver, remove it
+      line = this.interpolatedText[lineIndex];
+
+      // If there are no more characters to push, break
       if (leftOver === 0) {
-        this.interpolatedText[lineIndex] = line.slice(0, leftOver);
         break;
       }
 
@@ -112,16 +112,16 @@ export class Textbox extends Sprite implements ITextbox {
         lineIndex = this.interpolatedText.push("") - 1;
       }
 
-      // Add the text to the screen
       this.interpolatedText[lineIndex] += word;
-      line = this.interpolatedText[lineIndex];
+      // Add the text to the screen
+
       leftOver -= word.length;
 
-      // Check to see if the word overFlows the animation
       if (leftOver < 0) {
-        this.interpolatedText[lineIndex] = line.slice(0, leftOver);
+        this.interpolatedText[lineIndex] = this.interpolatedText[lineIndex].slice(0, leftOver);
         break;
       }
+      // Check to see if the word overFlows the animation
     }
   }
 
@@ -168,6 +168,12 @@ export class Textbox extends Sprite implements ITextbox {
   public appendText(text: string): this {
     this.text += text;
     return this;
+  }
+
+  public skipAnimation(now: number): boolean {
+    const result: boolean = super.skipAnimation(now) && this.textIndex < this.text.length;
+    this.textIndex = this.text.length;
+    return result;
   }
 }
 

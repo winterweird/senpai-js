@@ -7,8 +7,8 @@ console.log(register, polyfill, regeneratorRuntime);
 
 const props: IStageManagerProps = {
   audioContext: new AudioContext(),
+  canvas: document.querySelector("canvas"),
   height: config.window.height,
-  selector: "body",
   width: config.window.width,
 };
 

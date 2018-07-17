@@ -14,10 +14,11 @@ function createWindow () {
     width: config.window.width,
     height: config.window.height,
     webPreferences: {
-      nodeIntegrationInWorker: true
+      experimentalFeatures: true,
+      nodeIntegrationInWorker: true,
     },
   });
-  mainWindow.setFullScreen(true);
+
   if (process.env.NODE_ENV === "development") {
     mainWindow.toggleDevTools();
   }

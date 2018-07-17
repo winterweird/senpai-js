@@ -8,7 +8,7 @@ export interface IStageProps extends IInteractionManagerProps {
 export interface IStage {
   update(): this;
   render(): this;
-  skipAnimations(): this;
+  skipAnimations(): boolean;
 }
 
 export class Stage extends InteractionManager implements IStage {
@@ -68,11 +68,14 @@ export class Stage extends InteractionManager implements IStage {
     return this;
   }
 
-  public skipAnimations(): this {
+  public skipAnimations(): boolean {
     const now = Date.now();
+    let result = false;
     for (const sprite of this.sprites) {
-      sprite.skipAnimation(now);
+      if (sprite.skipAnimation(now)) {
+        result = true;
+      }
     }
-    return this;
+    return result;
   }
 }

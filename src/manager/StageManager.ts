@@ -114,11 +114,7 @@ export class StageManager extends Stage implements IStageManager {
   public history: IHistoryState[] = [];
 
   constructor(props: IStageManagerProps) {
-    super(
-      Object.assign({}, props, {
-        audioContext: new AudioContext(),
-      }),
-    );
+    super(props);
     Object.defineProperty(window, "sm", {
       configurable: false,
       enumerable: false,
@@ -126,7 +122,6 @@ export class StageManager extends Stage implements IStageManager {
       writable: false,
     });
     this.load("index", 0);
-    this.on("click", e => this.attemptAdvance());
   }
 
   public createButton(...props: ILoadButtonProps[]): Promise<IButton> {
@@ -216,12 +211,6 @@ export class StageManager extends Stage implements IStageManager {
     this.index = index;
     this.history = [];
     this.spriteIndex = {};
-    StageManager.ScriptImports[script]().then(
-      e => {
-        console.log(e);
-      },
-    );
-
     return this;
   }
 
@@ -246,7 +235,19 @@ export class StageManager extends Stage implements IStageManager {
       sb.setText(name);
       sb.fontColor = color;
     }
-    return new Promise(resolve => this.once("firstdown", resolve));
+    return this.firstDownPromise();
+  }
+
+  private firstDownPromise(): Promise<void> {
+    return new Promise(resolve => {
+      const callback = e => {
+        if (!this.skipAnimations()) {
+          this.removeListener("firstdown", callback);
+          resolve();
+        }
+      };
+      this.on("firstdown", callback);
+    });
   }
 
   private assertPosition(sprite: ISprite): void {
@@ -274,21 +275,6 @@ export class StageManager extends Stage implements IStageManager {
     }
   }
 
-  private async attemptAdvance(): Promise<void> {
-    const result = await this.script.next();
-    if (result.done) {
-      this.load("index", 0);
-      return;
-    }
-    result
-      .value
-      .then(e => this.attemptAdvance())
-      .catch(e => console.log(e));
-
-    for (const sprite of this.sprites) {
-      this.updateSpritePosition(sprite);
-    }
-  }
   private updateSpritePosition(sprite: ISprite): void {
     const position: IPosition = StageManager.Positions.get(sprite);
     chain(sprite.position)

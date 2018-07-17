@@ -27,6 +27,10 @@ module.exports = {
       TYPE: types.identifier(index[path.node.callee.name]),
       ARGS: types.arrayExpression(path.node.arguments),
     });
-    return path.replaceWith(expression);
+
+    return path.replaceWith(
+      path.parentPath.isYieldExpression()
+        ? expression
+        : types.yieldExpression(expression, false));
   },
 };

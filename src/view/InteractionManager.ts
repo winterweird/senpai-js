@@ -62,12 +62,12 @@ export class InteractionManager extends Container implements IInteractionManager
     y: 0,
   };
   private events: IInteractionPointEvent[] = [
-    { target: this.canvas, event: "mousedown", listener: e => this.mouseDown(e as MouseEvent) },
+    { target: null, event: "mousedown", listener: e => this.mouseDown(e as MouseEvent) },
     { target: document.body, event: "mouseup", listener: e => this.mouseUp(e as MouseEvent) },
-    { target: this.canvas, event: "mousemove", listener: e => this.mouseMove(e as MouseEvent) },
-    { target: this.canvas, event: "touchstart", listener: e => this.touchStart(e as TouchEvent) },
+    { target: null, event: "mousemove", listener: e => this.mouseMove(e as MouseEvent) },
+    { target: null, event: "touchstart", listener: e => this.touchStart(e as TouchEvent) },
     { target: document.body, event: "touchend", listener: e => this.touchEnd(e as TouchEvent) },
-    { target: this.canvas, event: "touchmove", listener: e => this.touchMove(e as TouchEvent) },
+    { target: null, event: "touchmove", listener: e => this.touchMove(e as TouchEvent) },
     { target: document.body, event: "touchcancel", listener: e => this.touchCancel(e as TouchEvent) },
   ];
 
@@ -86,11 +86,17 @@ export class InteractionManager extends Container implements IInteractionManager
   }
 
   public hookEvents(): void {
-    this.events.forEach(event => event.target.addEventListener(event.event, event.listener));
+    this.events.forEach(
+      event => (event.target || this.canvas)
+        .addEventListener(event.event, event.listener),
+    );
   }
 
   public dispose(): void {
-    this.events.forEach(event => event.target.removeEventListener(event.event, event.listener));
+    this.events.forEach(
+      event => (event.target || this.canvas)
+        .removeEventListener(event.event, event.listener),
+    );
   }
 
   public mouseDown(event: MouseEvent): void {

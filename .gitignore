@@ -1,6 +1,4 @@
 node_modules
-assets/characters
-assets/fonts
 assets/sound
 dist
 .cache

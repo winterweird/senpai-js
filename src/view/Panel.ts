@@ -115,11 +115,12 @@ export class Panel extends Sprite implements IPanel {
     }
   }
 
-  public skipAnimation(now: number): void {
-    super.skipAnimation(now);
+  public skipAnimation(now: number): boolean {
+    let result: boolean = super.skipAnimation(now);
     for (const sprite of this.sprites) {
-      sprite.skipAnimation(now);
+      result = sprite.skipAnimation(now) || result;
     }
+    return result;
   }
 }
 
@@ -134,7 +135,7 @@ export async function loadPanel(props: ILoadPanelProps): Promise<IPanel> {
   assert(textures.Texture);
 
   props.textures = textures;
-  const textbox = new Panel(props);
+  const panel = new Panel(props);
 
-  return textbox;
+  return panel;
 }
