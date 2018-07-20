@@ -36,13 +36,7 @@ This folder contains a class that has knowledge of how the project is structured
 
 This folder contains a whole framework for modifying 2d transforms. Each function accepts either a `Float64Array` or `number[]` of length 6, and the numbers map to the following matrix elements. `[aa, ab, ba, bb, ca, cb]` See the following matrix representation for mapping.
 
-```math
-\begin{bmatrix}
-   aa & ba & ca \\
-   ab & bb & cb \\
-   0  & 0  & 1
-\end{bmatrix}
-```
+![Matrix Map](https://cdn.pbrd.co/images/HvnXB9x.png)
 
 It contains a `chain(value: Float64Array|number[], immutable: boolean = false): IMatrix` function for chaining purposes.  If `immutable` is set to true, it will not modify the original matrix inline, and return a new `IMatrix` each time you chain a function.
 
@@ -69,7 +63,58 @@ Notes on collision detection for sprites:
 
 Each function performs the following operations:
 
-- `ease`: The `EaseFunction` that controls the animation rate.
-- `broadPhase`: Simple `aabb` collision detection. It uses the `tx` and `ty` properties and compares them to the `width` and `height` of the control
-- narrowPhase: returns true unless it's overridden by a parent class
-- `isHovering`: this is a function used by the `StageInteractionManager`
+- `ease`: an `EaseFunction` that controls the animation rate. See `./src/ease/index.ts`
+- `broadPhase`: simple `aabb` collision detection. It uses the `tx` and `ty` properties and compares them to the `width` and `height` of the control
+- narrowPhase: returns `true` unless it's overridden by a child class
+- `isHovering`: used by the `StageInteractionManager` to determine if the `point` is over the sprite
+- `move`: sets the `previousPosition` array and sets the `position` array to the provided `position` parameter
+- `setAlpha`: sets the `previousAlpha` to the current `alpha` value, then sets the `alpha` value to the provided `alpha` parameter
+- `setZ`: sets the `z` index value.
+- `over`: modifies all the animation properties.
+  - `timespan`: length of animation in ms
+  - `wait`: length to time to wait in ms
+  - `ease`: easeFunction to use
+- `skipAnimation`: sets the `animationStart` property to `Date.now()` to skip the animation. It returns true if it actually skipped the animation
+- `update`: This is a no-op unless modified by a child class
+- `interpolate`: This function calculates:
+  - `interpolatedPosition` matrix property (onscreen position)
+  - `inverse` matrix property
+  - `parent.inverse` matrix property (if there's a parent)
+  - if there is a parent inverse, it's calculated with `parent.inverse * sprite.inverse`
+- `setTexture`: the function that sets the current texture of the sprite
+- `render`: draws the current texture of the sprite at `[0, 0]`
+  - `Stage` calls `ctx.setTransform(...sprite.position);` first
+
+#### Button.ts
+
+This class extends the `Sprite` class and implements `IButton`. The `StageManager` uses `loadButton` to asynchronously load the button textures.
+
+It overrides the standard update function calls to set the texture state, and set the `cursor` property to `"pointer"` if it detects a `hover` from the `InteractionManager`.
+
+```ts
+class Button extends Sprite implements ISprite {
+  public update(): void {
+    const active = this.active ? "Active" : "Inactive";
+    const hover = this.hover ? "Hover" : "NoHover";
+    const selected = this.selected ? "Selected" : "Unselected";
+    this.setTexture(`${active}_${hover}_${selected}`);
+
+    this.cursor = this.hover ? "pointer" : "default";
+    super.update();
+  }
+}
+```
+
+Rendering on a `Button` is overridden too, because buttons have text. They are typically drawn in the absolute center of the button with the provided `fontSize` property and `font` property. These properties can be overwritten.
+
+#### Character.ts
+
+This class extends the `Sprite` and implements `ICharacter`.
+
+It's essentially the same thing as a `Sprite` with a few extra properties, including `color`, `displayName`, and `name`.
+
+- `name`: string used to identify the folder that the spritesheet exists in.
+- `displayName`: the string that shows the character's name when they speak.
+- `color`: the color of the display name
+
+All characters must have a `Neutral` texture defined in their spritesheet.
