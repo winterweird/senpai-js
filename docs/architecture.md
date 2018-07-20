@@ -1,9 +1,5 @@
 # Architecture
 
-## ./babel-plugins
-
-This folder contains some ideas I've been tweaking with in terms of babel-plugins. Ignore this directory for now.
-
 ## script
 
 This folder contains all the downstream developer generated content for game scripts that run inside the engine. The proposal so far for script files will support the following file types:
