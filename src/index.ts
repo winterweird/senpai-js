@@ -6,7 +6,6 @@ import { IStageManager, IStageManagerProps, StageManager } from "./manager/Stage
 import * as m from "./matrix";
 console.log(register, polyfill, regeneratorRuntime);
 
-
 const props: IStageManagerProps = {
   audioContext: new AudioContext(),
   canvas: document.querySelector("canvas"),
@@ -25,8 +24,13 @@ function frame() {
 requestAnimationFrame(frame);
 
 (async function() {
-  const button = await sm.createButton({ ...props });
-  m.chain([1, 0, 0, 1, 100, 100])
-    .set(button.position);
+  const button = await sm.createButton({
+    id: "btn",
+    text: "Click Me!",
+    font: "Puritain-Bold",
+    fontSize: 16,
+    fontColor: "black",
+    position: [1, 0, 0, 1, 100, 100],
+  });
   sm.addSprite(button);
 }());
