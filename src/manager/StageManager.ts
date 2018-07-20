@@ -13,6 +13,7 @@ import { ILoadSoundSpriteProps, ISoundSprite, ISoundSpriteSheet, loadSoundSprite
 import { ISprite } from "../view/Sprite";
 import { IStage, IStageProps, Stage } from "../view/Stage";
 import { ILoadTextboxProps, ITextbox, loadTextbox } from "../view/Textbox";
+import { loadFonts, IFontSourceMap } from "../view/fonts";
 
 export interface ISpriteIndex {
   [id: string]: ISprite;
@@ -46,6 +47,7 @@ export interface IStageManager extends IStage {
   createSoundSprite(...props: ILoadSoundSpriteProps[]): Promise<ISoundSprite>;
   createSlider(...props: ILoadSliderProps[]): Promise<ISlider>;
   createTextbox(...props: ILoadTextboxProps[]): Promise<ITextbox>;
+  loadFonts(): Promise<void>;
 }
 
 export interface ISoundImportIndex {
@@ -162,5 +164,10 @@ export class StageManager extends Stage implements IStageManager {
     options.definition = StageManager.TextboxSpritesheet;
     options.src = StageManager.TextboxImages;
     return loadTextbox(options);
+  }
+
+  public loadFonts(): Promise<void> {
+
+    return loadFonts(require("../../assets/fonts/*.*") as IFontSourceMap);
   }
 }

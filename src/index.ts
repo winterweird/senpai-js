@@ -24,6 +24,7 @@ function frame() {
 requestAnimationFrame(frame);
 
 (async function() {
+  await sm.loadFonts();
   const button = await sm.createButton({
     id: "btn",
     text: "Click Me!",

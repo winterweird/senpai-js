@@ -1,4 +1,4 @@
-interface IFontSourceMap {
+export interface IFontSourceMap {
   [name: string]: {
     otf?: string;
     ttf?: string;
