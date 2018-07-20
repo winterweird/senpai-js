@@ -28,6 +28,8 @@ requestAnimationFrame(frame);
     fontSize: 16,
     fontColor: "black",
     position: [1, 0, 0, 1, 100, 100],
+    src: null,
+    definition: null,
   });
   sm.addSprite(button);
 }());

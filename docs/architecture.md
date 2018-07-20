@@ -1,20 +1,20 @@
 # Architecture
 
-## script
+## `./script`
 
 This folder contains all the downstream developer generated content for game scripts that run inside the engine. The proposal so far for script files will support the following file types:
 
-- .md (Markdown files)
-- .js, .ts, .cs,  (things that transpile to js inside parcel)
-- .json, .yaml, (static file formats)
-- .aml (archieml possibly)
-- .senpaijs (a dsl that compiles to a .js file state machine)
+- `.md` (Markdown files)
+- `.js`, `.ts`, `.coffee`,  (things that transform into JavaScript inside parcel)
+- `.json`, `.yaml`, (static file formats)
+- `.aml` (`archieml` possibly)
+- `.senpai` (a domain specific language that compiles to a `.js` file state machine)
 
-## src
+## `./src`
 
 This folder contains all the source for the engine
 
-### ease
+### `./src/ease`
 
 This folder contains an `index.ts` file for all the ease functions. Props to `b-fuze` for helping increase ease precision. Ease functions have a typescript signature like this:
 
@@ -24,11 +24,11 @@ type EaseFunction = (value: number /* range: [0-100] */) => number; /* range: [0
 
 The `value` parameter is a `Float` ratio that represents the linear length of time that has past relative to how long the animation needs to take. For instance, if the animation just started, `value` should be `0`. If the animation has completed, it should return `100`.  A quadratic ease function would return a `value` distribution that is curved quadratically.
 
-### manager
+### `./src/manager`
 
 This folder contains a class that has knowledge of how the project is structured, how sprites are setup, and works with the `Stage` class in the `./src/view` folder. It's sole responsibility is to create `Sprite`s and `SoundSprites`.
 
-### matrix
+### `./src/matrix`
 
 This folder contains a whole framework for modifying 2d transforms. Each function accepts either a `Float64Array` or `number[]` of length 6, and the numbers map to the following matrix elements. `[aa, ab, ba, bb, ca, cb]` See the following matrix representation for mapping.
 
@@ -36,19 +36,19 @@ This folder contains a whole framework for modifying 2d transforms. Each functio
 
 It contains a `chain(value: Float64Array|number[], immutable: boolean = false): IMatrix` function for chaining purposes.  If `immutable` is set to true, it will not modify the original matrix inline, and return a new `IMatrix` each time you chain a function.
 
-### util
+### `./src/util`
 
 This folder contains a bunch of utility interfaces and classes. A lot of the utility interfaces that exist in the `./src/view` folder might be better placed in their own files inside this folder.
 
-### view
+### `./src/view`
 
 This folder contains a set of controls that are used for drawing things to the canvas.
 
-#### Container.ts
+#### `./src/view/Container.ts`
 
 This file is the simple sprite and soundSprite container required for updating and rendering sprites, and stores the `AudioContext` used for playing music. It inherits the `EventEmitter` class for event purposes.
 
-#### Sprite.ts
+#### `./src/view/Sprite.ts`
 
 This is a parent class that is the basis for all sprites. It contains default drawing and collision logic for `IInteractionPoint` movement.
 
@@ -67,8 +67,8 @@ Each function performs the following operations:
 - `setAlpha`: sets the `previousAlpha` to the current `alpha` value, then sets the `alpha` value to the provided `alpha` parameter
 - `setZ`: sets the `z` index value.
 - `over`: modifies all the animation properties.
-  - `timespan`: length of animation in ms
-  - `wait`: length to time to wait in ms
+  - `timespan`: length of animation in milliseconds
+  - `wait`: length to time to wait in milliseconds
   - `ease`: easeFunction to use
 - `skipAnimation`: sets the `animationStart` property to `Date.now()` to skip the animation. It returns true if it actually skipped the animation
 - `update`: This is a no-op unless modified by a child class
@@ -81,7 +81,7 @@ Each function performs the following operations:
 - `render`: draws the current texture of the sprite at `[0, 0]`
   - `Stage` calls `ctx.setTransform(...sprite.position);` first
 
-#### Button.ts
+#### `./src/view/Button.ts`
 
 This class extends the `Sprite` class and implements `IButton`. The `StageManager` uses `loadButton` to asynchronously load the button textures.
 
@@ -103,14 +103,14 @@ class Button extends Sprite implements ISprite {
 
 Rendering on a `Button` is overridden too, because buttons have text. They are typically drawn in the absolute center of the button with the provided `fontSize` property and `font` property. These properties can be overwritten.
 
-#### Character.ts
+#### `./src/view/Character.ts`
 
 This class extends the `Sprite` and implements `ICharacter`.
 
 It's essentially the same thing as a `Sprite` with a few extra properties, including `color`, `displayName`, and `name`.
 
-- `name`: string used to identify the folder that the spritesheet exists in.
+- `name`: string used to identify the folder that the sprite sheet exists in.
 - `displayName`: the string that shows the character's name when they speak.
 - `color`: the color of the display name
 
-All characters must have a `Neutral` texture defined in their spritesheet.
+All characters must have a `Neutral` texture defined in their sprite sheet.
