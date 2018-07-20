@@ -9,6 +9,7 @@
   "scripts": {
     "start": "run-s dev-server",
     "dev-server": "run-p parcel-watch electron-dev",
+    "tslint": "tslint --fix --project ./",
     "electron-dev": "cross-env NODE_ENV=development electron .",
     "parcel-watch": "parcel watch ./src/index.html --target=electron --no-cache --no-hmr"
   },
