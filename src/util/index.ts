@@ -1,4 +1,3 @@
-import get from "lodash.get";
 import { ISprite } from "../view/Sprite";
 
 export interface IPoint {
@@ -143,14 +142,6 @@ export interface IHasParent {
   parent: string;
 }
 
-export function compareProps<T>(a: T, b: T, props: Array<string | string[]>): boolean {
-  for (const prop of props) {
-    if (get(a, prop) !== get(b, prop)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 export enum TextAlign {
   "left" = "left",
