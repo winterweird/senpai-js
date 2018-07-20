@@ -164,6 +164,7 @@ export class InteractionManager extends Container implements IInteractionManager
     if (point.hover) {
       point.active = point.hover;
       point.active.down = true;
+      point.active.active = true;
     }
     this.emit("firstdown", point);
   }
@@ -173,6 +174,7 @@ export class InteractionManager extends Container implements IInteractionManager
     if (point.active && point.hover === point.active) {
       point.active.emit("click", point);
       point.active.down = false;
+      point.active.active = false;
       point.active = null;
     }
     this.emit("click", point);
