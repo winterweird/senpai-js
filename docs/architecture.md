@@ -81,6 +81,32 @@ Each function performs the following operations:
 - `render`: draws the current texture of the sprite at `[0, 0]`
   - `Stage` calls `ctx.setTransform(...sprite.position);` first
 
+The following are properties on sprites:
+
+- `active`: This property describes when a point has "captured" a control for input. When the mouse clicks down over a button, it will set the button's `active` property to `true`. This is intended to cause the button to look like it's actively being pressed.
+- `hover`: This property is set to true when an uncaptured interaction point is over the sprite
+- `texture`: This property is something drawable by the `ctx.drawImage()` function. Can be a video, `ImageBitmap`, canvas, `OffscreenCanvas`, ... etc  
+- `z`: This property is the z index of the sprite. The `Stage` update function will sort the sprites by `z` before performing collision detection.
+- `alpha`: This property sets/multiplies the `globalAlpha` value. See [global alpha](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha).
+- `previousAlpha`: This property is previous `alpha` value before the sprite `move`ed
+- `position`: This is a `Float64Array` that describes the linear transform of the target position a sprite will animate to when it `move`s.
+- `interpolatedPosition`: This is the linear transform of the sprite that describes it's current position. It is also used in collision detection.
+- `previousPosition`: This is the previous `interpolatedPosition` of the sprite after it was `move`ed. It is used as the starting value of the current moving animation. 
+- `lastInterpolated`: This property is used to describe the timestamp of the last time the sprite's position was calculated. This is required because sometimes a child's interpolatedPosition depends on it's parent's position, and the parent must be updated to the current timestamp.
+- `animationStart`: This is the timestamp of the animation start time. Used in animation.
+- `animationLength`: This is the length in milliseconds of the animation timespan. Used in animation.
+- `wait`: This is the length of time the animation will wait before beginning.
+- `easeFunc`: This is the ease function that describes the ratio distribution of how a sprite moves with animation.
+- `parent`: This is the pointer to the container or stage the sprite currently sits inside.
+- `cursor`: This property should be set to `"pointer"` inside the `update()` function definition whenever user interaction will affect it's state when the sprite is clicked.
+
+The following events are emitted for every sprite regardless of what kind:
+
+- `"point-move"`: This event is emitted when an interaction point is hovering over the sprite.
+- `"click"`: This event is emitted when the sprite was "active", and the "up" event occurs while the interaction point is hovering over it.
+- `"down"`: This event is emmited when an interaction point transitions to the "down" state.
+- `"up"`: This event is emmited when an interaction point transitions to the "up" state after the point was "down".
+
 #### `./src/view/Button.ts`
 
 This class extends the `Sprite` class and implements `IButton`. The `StageManager` uses `loadButton` to asynchronously load the button textures.
@@ -88,7 +114,7 @@ This class extends the `Sprite` class and implements `IButton`. The `StageManage
 It overrides the standard update function calls to set the texture state, and set the `cursor` property to `"pointer"` if it detects a `hover` from the `InteractionManager`.
 
 ```ts
-class Button extends Sprite implements ISprite {
+class Button extends Sprite implements IButton {
   public update(): void {
     const active = this.active ? "Active" : "Inactive";
     const hover = this.hover ? "Hover" : "NoHover";
@@ -103,9 +129,13 @@ class Button extends Sprite implements ISprite {
 
 Rendering on a `Button` is overridden too, because buttons have text. They are typically drawn in the absolute center of the button with the provided `fontSize` property and `font` property. These properties can be overwritten.
 
+The following events are emitted for buttons:
+
+- "click": happens when the button is clicked
+
 #### `./src/view/Character.ts`
 
-This class extends the `Sprite` and implements `ICharacter`.
+This class extends the `Sprite` class and implements `ICharacter`.
 
 It's essentially the same thing as a `Sprite` with a few extra properties, including `color`, `displayName`, and `name`.
 
@@ -113,4 +143,85 @@ It's essentially the same thing as a `Sprite` with a few extra properties, inclu
 - `displayName`: the string that shows the character's name when they speak.
 - `color`: the color of the display name
 
-All characters must have a `Neutral` texture defined in their sprite sheet.
+#### `./src/view/Checkbox.ts`
+
+This class extends the `Sprite` class and implements `ICheckbox`.
+
+This sprite type is designed to be a button with a label next to it that fundamentally has a `checked` and `unchecked` state.
+
+The texture of the checkbox becomes the bounds for a `Button` that emits a `toggle` event whenever the state of the checkbox changes.
+
+It overrides the `update` method and the sprite definition requires states that match the following states:
+
+```ts
+class CheckBox extends Sprite implements ICheckbox {
+  public update(): void {
+    const active = this.active ? "Active" : "Inactive";
+    const hover = this.hover ? "Hover" : "NoHover";
+    const checked = this.checked ? "Checked" : "Unchecked";
+    this.setTexture(`${active}_${hover}_${checked}`);
+
+    this.cursor = this.hover ? "pointer" : "default";
+    super.update();
+  }
+}
+```
+
+#### `./src/view/Close.ts`
+
+This is a button sprite definition without the `selected` property, and a slightly modified `update()` function.
+
+```ts
+export class Close extends Sprite implements IClose {
+  constructor(props: ICloseProps) {
+    super(props);
+  }
+  public update(): void {
+    const active = this.active ? "Active" : "Inactive";
+    const hover = this.hover ? "Hover" : "NoHover";
+    this.setTexture(`${active}_${hover}`);
+
+    this.cursor = this.hover ? "pointer" : "default";
+    super.update();
+  }
+}
+```
+
+#### `./src/view/Panel.ts`
+
+This is the most complicated sprite. It is essentially a container that can contain any number of child sprites. The `setTexture()` method must be called on it immediately or it will not be drawable.
+
+It's purpose is to draw children sprites relative to the current position of the panel. In fact, hovering detection is actually deferred to it's children. `narrowPhase()` collision detection actually loops over the children, transforming the `IInteractionPoint` in question relative to the position of the sprite in the cointainer. If it detects a hover, `narrowPhase()` will actually return the `child` instead of itself. This allows hovering detection on sprites inside multiple nested panels. If no `narrowPhase()` collision detection is found, it will return itself.
+
+`render()`ing a panel will render all of it's children, handling `.transform`s relative to the panel's current `interpolatedPosition` automatically. The children will be rendered in a `.clip()`ed region. Please see [mdn clip](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clip) if this is unclear.
+
+`update()`ing a panel will `update()` all of it's children, modifying itself to be hovering if a child is hovered to enable `cursor: "pointer"` functionality.
+
+#### `./src/view/fonts.ts`
+
+This function loads all the specified fonts. It's configured in `./src/manager/StageManager.ts`.
+
+#### `./src/view/Label.ts`
+
+This sprite has no texture. It simply draws text with the provided properties at the `interpolatedPosition`.
+
+```ts
+export interface ILabelProps extends ISpriteProps {
+  text?: string;
+  font?: string;
+  fontSize?: number;
+  fontColor?: string;
+  textAlign: TextAlign;
+  textBaseline: TextBaseline;
+}
+```
+
+The `fontColor` property is actually the `ctx.fillStyle` property, and it will be possible to create `CanvasGradient`s and use them as the `fillStyle` for drawing the text. This will be supported later.
+
+The `font` property is calculated with the following string:
+
+```ts
+`${this.font} ${this.fontSize}px`;
+```
+
+All the rest of these properties directly map to values on the `CanvasRenderingContext2D.prototype`. Please visit [mdn](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) to learn about these properties.

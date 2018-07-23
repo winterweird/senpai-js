@@ -20,8 +20,6 @@ export class Panel extends Sprite implements IPanel {
   constructor(props: IPanelProps) {
     super(props);
     this.sprites = props.sprites || this.sprites;
-
-    this.setTexture("Texture");
   }
 
   public addSprite(sprite: ISprite): this {
@@ -53,7 +51,6 @@ export class Panel extends Sprite implements IPanel {
     this.sprites.sort(sortZ);
 
     for (const sprite of this.sprites) {
-
       sprite.down = false;
       sprite.hover = false;
     }

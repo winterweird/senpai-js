@@ -32,4 +32,20 @@ requestAnimationFrame(frame);
     definition: null,
   });
   sm.addSprite(button);
+  const sound = await sm.createSoundSprite({
+    buffer: null,
+    context: null,
+    definition: null,
+    id: "splash",
+    name: "splash",
+    texture: "texture",
+    source: null,
+    src: null,
+    volume: 1,
+  });
+
+  button.on("click", () => {
+    sound.stop();
+    sound.play();
+  })
 }());
