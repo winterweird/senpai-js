@@ -1,9 +1,6 @@
-import register from "babel-core/register";
-import polyfill from "babel-polyfill";
-import regeneratorRuntime from "regenerator-runtime";
 import config from "../application.config";
 import { IStageManager, IStageManagerProps, StageManager } from "./manager/StageManager";
-console.log(register, polyfill, regeneratorRuntime);
+import * as m from "./matrix";
 
 const props: IStageManagerProps = {
   audioContext: new AudioContext(),
@@ -21,3 +18,34 @@ function frame() {
 }
 
 requestAnimationFrame(frame);
+
+(async function() {
+  await sm.loadFonts();
+  const button = await sm.createButton({
+    id: "btn",
+    text: "Click Me!",
+    font: "Puritain-Bold",
+    fontSize: 16,
+    fontColor: "black",
+    position: [1, 0, 0, 1, 100, 100],
+    src: null,
+    definition: null,
+  });
+  sm.addSprite(button);
+  const sound = await sm.createSoundSprite({
+    buffer: null,
+    context: null,
+    definition: null,
+    id: "splash",
+    name: "splash",
+    texture: "texture",
+    source: null,
+    src: null,
+    volume: 1,
+  });
+
+  button.on("click", () => {
+    sound.stop();
+    sound.play();
+  })
+}());

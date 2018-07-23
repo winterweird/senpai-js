@@ -23,7 +23,6 @@ export class Character extends Sprite implements ICharacter {
     this.name = props.name;
     this.displayName = props.displayName;
     this.color = props.color;
-    super.setTexture("Neutral");
   }
 }
 
@@ -35,7 +34,6 @@ export async function loadCharacter(props: ILoadCharacterProps): Promise<ICharac
   const img = loadImage(props.src);
   const textures = await createTextureMap(props.definition, img);
 
-  assert(textures.Neutral);
   props.textures = textures;
   const character = new Character(props);
 

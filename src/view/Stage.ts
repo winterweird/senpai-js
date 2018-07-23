@@ -1,11 +1,12 @@
 import { IInteractionManagerProps, InteractionManager } from "./InteractionManager";
 import { ISprite } from "./Sprite";
+import { IContainer } from "./Container";
 
 export interface IStageProps extends IInteractionManagerProps {
 
 }
 
-export interface IStage {
+export interface IStage extends IContainer {
   update(): this;
   render(): this;
   skipAnimations(): boolean;

@@ -1,8 +1,4 @@
 {
   "presets": [],
-  "plugins": [
-    "C:\\Users\\jtenner\\Desktop\\projects\\project-revoluti0n\\babel-plugins\\script-transformer.js",
-    "syntax-async-generators",
-    "transform-async-to-generator", "syntax-async-functions", "transform-regenerator"
-  ]
+  "plugins": []
 }
